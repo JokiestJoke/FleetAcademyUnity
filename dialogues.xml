@@ -1,0 +1,37 @@
+<dialogues>
+
+    <character name = "Mark">  
+        <dialogue id = "00" content = "Hello Mark, this is a test with a dialogue id of #00">
+            
+            <choice content = "Mark, This is choice #1 with a target of dialogue id #01" target = "01">
+            </choice>
+           
+            <choice content = "Mark, This is choice #2 with a traget of dialogue id #02" target = "02">  
+            </choice>
+
+        </dialogue>
+        
+        <dialogue id = "01" content = "Hello Mark, this is a test with a dialogue id of #01">
+            
+            <choice content = "Mark, This is choice #1 with a target of dialogue id #-1" target = "-1">
+            </choice>
+           
+            <choice content = "Mark, This is choice #2 with a target of dialogue id #-1" target = "-1">  
+            </choice>
+
+        </dialogue>
+        <dialogue id = "02" content = "Hello Mark, this is a test with a dialogue id of #02">
+            
+            <choice content = "Mark, This is choice #1 with a target of dialogue id #-1" target = "-1">
+            </choice>
+           
+            <choice content = "Mark, This is choice #2 with a target of dialogue id #-1" target = "-1">  
+            </choice>
+
+        </dialogue>
+    </character>
+
+
+
+
+</dialogues>
