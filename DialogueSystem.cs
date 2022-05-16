@@ -1,12 +1,15 @@
 /*
 Author: Mark Doghramji
-Last Update: 5/9/2022
+Last Update: 5/16/2022
 Version 1.1
 Notes:
-This class implements the Billboard effect that the BillboardManager relies on. Continuing the conversation or 'Single Responsibility classes'-- this class's
-only responsibility is to create a method that creates the billboard effect. This class will have an instance in Billboard manager to grant access to the method.
-Not only that, but the method is public visibility allowing the BillboardManager to use its method. I would have prefered this method not be public visibility 
-but it seemed trivial in nature. Please note that this class does not inherit from Unity's MonoBehaviour.
+This class implements the basic dialogue system for the game. I need to do a bit more code refracting so that this class truly follows the single responsibility principle. 
+Continuing the conversation of 'Single Responsibility classes'-- this class's sole responsibility should be managinge the dialogue of the game. Essentially what this class
+does is that it loads the dialogue from a seperated XML file, and prepares the dialogue by creating Dialogue Objects (See Dialogue.cs). These Objects have responses, and a target
+where the dialogue should shoot to (by index) when a player interacts with the NPC starting the conversation. Currently the dialogue just goes to console. My next big step
+will be allowing the Unity UI to have clickable buttons to navigate the dialogue choices. One major benefit of creating dialogue System and how it interacts with Dialogue.cs is that 
+we do not need to have dialogue seperated by different files. We have every dialogue from ANY character nested safely in a single file where even someone who is not a 
+programmer can easily manipulate. 
 */
 
 
