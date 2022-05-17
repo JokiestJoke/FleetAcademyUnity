@@ -25,7 +25,9 @@ public class DialogueSystem : MonoBehaviour
     Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
     int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
     int currentDialogueIndex = 0; // declaring an initial index of 0;
-    bool holdForResponse = false; // delclaring a bool
+    
+    bool holdForResponse = false; // delclaring a bool which holds for a players response to dialogue choices
+    bool isDialogueActive = false; // I will use this bool to check if the dialogue is active currently.
     
     
     int dialogueIndex = 0;
@@ -40,13 +42,7 @@ public class DialogueSystem : MonoBehaviour
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
         assembleDialogueFromXml();
         
-        for (int i = 0; i < numberOfDialogues; i++)
-        {
-
-            print("Message: " + dialogues[i].message);
-            print("Answer A: " + dialogues[i].response[0]);
-            print("Answer B: " + dialogues[i].response[1]);
-        }
+        startDialogue();
 
 
     }
@@ -54,7 +50,39 @@ public class DialogueSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //handleDialogue(); // we call this helper function once every frame.
+        if (isDialogueActive)
+        {
+            if (!holdForResponse)
+            {
+                if (currentDialogueIndex != -1){
+                    displayDialogue();
+                } 
+                else
+                {
+                    isDialogueActive = false;
+                    holdForResponse = false;
+                    currentDialogueIndex = 0;
+
+                }
+                holdForResponse = true;
+            } else {
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
+                    holdForResponse = false;
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
+                    holdForResponse = false;
+
+
+                }
+            }
+
+        }
+
     }
 
     private void assembleDialogueFromXml(){
@@ -108,6 +136,56 @@ public class DialogueSystem : MonoBehaviour
             }
         }
         return dialogueIndex;
+    }
+
+    /* WORKING ON REFRACTING CODE IN UPDATE. 
+    private void handleDialogue(){ 
+        if (isDialogueActive){
+            if (!holdForResponse){ // if we are holding for a response. By default this is set to false, but we need to check if it is true
+               if (currentDialogueIndex != -1){// We check to see if the currentDialogueIndex is -1. We do this becuase the end of conversations in our xml have a target of -1. "If dialogue is not over" is the basic idea.
+                    displayDialogue();
+                } else { // if the currentDialogueIndex does equal 1
+                    isDialogueActive = false; //we set this bool to false as we no longer should be expecting dialogue
+                    holdForResponse = false; // basically we hold for a response when there is one. But since the index is -1 we set this to false.
+                    currentDialogueIndex = 0; // we dont want the -1 to carry over for the next dialogue choice so we set it to 0 here.   
+                }
+                holdForResponse = true;
+            } 
+        } else {
+            //handleUserInputForResponse();
+            if (Input.GetKeyDown(KeyCode.Q)){
+                currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0]; //if the player presses "alpha numeric 1" then we target the corresponding dialogue
+                holdForResponse = false; // we set this to false as we are no longer waiting for a players response
+                Debug.Log("Q pressed");
+            } else if (Input.GetKeyDown(KeyCode.E)){
+                currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1]; //if the player presses "alpha numeric 2" then we target the corresponding dialogue
+                holdForResponse = false; // we set this to false as we are no longer waiting for a players response
+                 Debug.Log("E pressed");
+            }
+        }
+    }
+    */
+    /* WORKING ON REFRACTING CODE IN UPDATE. 
+    private void handleUserInputForResponse(){ // helper function will handle user input that will then relate to the responses the player chooses.
+        if (Input.GetKeyDown(KeyCode.Q)){
+            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0]; //if the player presses "alpha numeric 1" then we target the corresponding dialogue
+            holdForResponse = false; // we set this to false as we are no longer waiting for a players response
+        } else if (Input.GetKeyDown(KeyCode.E)){
+            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1]; //if the player presses "alpha numeric 2" then we target the corresponding dialogue
+            holdForResponse = false; // we set this to false as we are no longer waiting for a players response
+        }
+    }
+    */
+
+    private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
+        Debug.Log(dialogues[currentDialogueIndex].message);
+        Debug.Log("1: " + dialogues[currentDialogueIndex].response[0]);
+        Debug.Log("2: " + dialogues[currentDialogueIndex].response[1]);
+    }
+
+    private void startDialogue(){
+        holdForResponse = false;
+        isDialogueActive = true;
     }
 
 
