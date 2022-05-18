@@ -112,46 +112,37 @@ public class DialogueSystem : MonoBehaviour
     private void handleDialogue(){
         if (isDialogueActive)
         {
-            if (!holdForResponse)
+            if (!holdForResponse) //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
             {
-                if (currentDialogueIndex != -1){
-                    displayDialogue();
+                if (currentDialogueIndex != -1){// and the dialogue is NO over (which -1 would indicate in the XML file under target)
+                    displayDialogue(); // then we display dialogue
                 } 
-                else
+                else //if the dialogue is -1 then we must end the dialogue
                 {
-                    isDialogueActive = false;
-                    holdForResponse = false;
-                    currentDialogueIndex = 0;
+                    isDialogueActive = false; //We set isDialogueActive to false as the id for the next target equals -1
+                    holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
+                    currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
 
                 }
-                holdForResponse = true;
+                holdForResponse = true; //we then wait for user input 
             } else {
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
-                    holdForResponse = false;
-                }
-                else if (Input.GetKeyDown(KeyCode.E))
-                {
-                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
-                    holdForResponse = false;
-                }
+                handleUserInputForResponse();
             }
         }
     }
 
-    
-    /* WORK ON REFRACTING CODE IN handleDialogue(). 
-    private void handleUserInputForResponse(){ // helper function will handle user input that will then relate to the responses the player chooses.
+
+    private void handleUserInputForResponse(){
         if (Input.GetKeyDown(KeyCode.Q)){
-            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0]; //if the player presses "alpha numeric 1" then we target the corresponding dialogue
-            holdForResponse = false; // we set this to false as we are no longer waiting for a players response
+            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
+            holdForResponse = false;
+            //Debug.Log("Q is pressed"); //keep for testing
         } else if (Input.GetKeyDown(KeyCode.E)){
-            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1]; //if the player presses "alpha numeric 2" then we target the corresponding dialogue
-            holdForResponse = false; // we set this to false as we are no longer waiting for a players response
+            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
+            holdForResponse = false;
+            //Debug.Log("E is pressed"); // keep for testing
         }
     }
-    */
 
     private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
         Debug.Log(dialogues[currentDialogueIndex].message);
@@ -159,7 +150,7 @@ public class DialogueSystem : MonoBehaviour
         Debug.Log("2: " + dialogues[currentDialogueIndex].response[1]);
     }
 
-    private void startDialogue(){
+    private void startDialogue(){ // hlper function that makes sure our dialogues start properly.
         holdForResponse = false;
         isDialogueActive = true;
     }
