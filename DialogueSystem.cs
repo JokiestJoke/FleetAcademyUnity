@@ -50,38 +50,8 @@ public class DialogueSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //handleDialogue(); // we call this helper function once every frame.
-        if (isDialogueActive)
-        {
-            if (!holdForResponse)
-            {
-                if (currentDialogueIndex != -1){
-                    displayDialogue();
-                } 
-                else
-                {
-                    isDialogueActive = false;
-                    holdForResponse = false;
-                    currentDialogueIndex = 0;
 
-                }
-                holdForResponse = true;
-            } else {
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
-                    holdForResponse = false;
-                }
-                else if (Input.GetKeyDown(KeyCode.E))
-                {
-                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
-                    holdForResponse = false;
-
-
-                }
-            }
-
-        }
+        handleDialogue(); // we call this helper function once every frame.
 
     }
 
@@ -138,34 +108,40 @@ public class DialogueSystem : MonoBehaviour
         return dialogueIndex;
     }
 
-    /* WORKING ON REFRACTING CODE IN UPDATE. 
-    private void handleDialogue(){ 
-        if (isDialogueActive){
-            if (!holdForResponse){ // if we are holding for a response. By default this is set to false, but we need to check if it is true
-               if (currentDialogueIndex != -1){// We check to see if the currentDialogueIndex is -1. We do this becuase the end of conversations in our xml have a target of -1. "If dialogue is not over" is the basic idea.
+
+    private void handleDialogue(){
+        if (isDialogueActive)
+        {
+            if (!holdForResponse)
+            {
+                if (currentDialogueIndex != -1){
                     displayDialogue();
-                } else { // if the currentDialogueIndex does equal 1
-                    isDialogueActive = false; //we set this bool to false as we no longer should be expecting dialogue
-                    holdForResponse = false; // basically we hold for a response when there is one. But since the index is -1 we set this to false.
-                    currentDialogueIndex = 0; // we dont want the -1 to carry over for the next dialogue choice so we set it to 0 here.   
+                } 
+                else
+                {
+                    isDialogueActive = false;
+                    holdForResponse = false;
+                    currentDialogueIndex = 0;
+
                 }
                 holdForResponse = true;
-            } 
-        } else {
-            //handleUserInputForResponse();
-            if (Input.GetKeyDown(KeyCode.Q)){
-                currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0]; //if the player presses "alpha numeric 1" then we target the corresponding dialogue
-                holdForResponse = false; // we set this to false as we are no longer waiting for a players response
-                Debug.Log("Q pressed");
-            } else if (Input.GetKeyDown(KeyCode.E)){
-                currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1]; //if the player presses "alpha numeric 2" then we target the corresponding dialogue
-                holdForResponse = false; // we set this to false as we are no longer waiting for a players response
-                 Debug.Log("E pressed");
+            } else {
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
+                    holdForResponse = false;
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
+                    holdForResponse = false;
+                }
             }
         }
     }
-    */
-    /* WORKING ON REFRACTING CODE IN UPDATE. 
+
+    
+    /* WORK ON REFRACTING CODE IN handleDialogue(). 
     private void handleUserInputForResponse(){ // helper function will handle user input that will then relate to the responses the player chooses.
         if (Input.GetKeyDown(KeyCode.Q)){
             currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0]; //if the player presses "alpha numeric 1" then we target the corresponding dialogue
