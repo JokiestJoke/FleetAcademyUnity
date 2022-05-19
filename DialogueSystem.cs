@@ -17,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Xml;
+using UnityEngine.UI; // this is very important to import this library so that this file can manipulate the unity UI I created
 
 
 public class DialogueSystem : MonoBehaviour
@@ -28,6 +29,9 @@ public class DialogueSystem : MonoBehaviour
     
     bool holdForResponse = false; // delclaring a bool which holds for a players response to dialogue choices
     bool isDialogueActive = false; // I will use this bool to check if the dialogue is active currently.
+
+    GameObject dialogueBox;
+    GameObject dialoguePanel;
     
     
     int dialogueIndex = 0;
@@ -37,12 +41,22 @@ public class DialogueSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+
+        dialogueBox = GameObject.Find("dialogueBox"); // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
+        dialoguePanel = GameObject.Find("dialoguePanel"); // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
+
+        GameObject.Find("dialogueImage").GetComponent<RawImage>().texture = Resources.Load<Texture2D>(gameObject.name) as Texture2D; //dialogue image for each NPC for the specific dialogue
+
+        dialoguePanel.SetActive(false); // we basically DO NOT want the dialogue panel to block the screen at the start of the game.
+
+
+
         characterName = gameObject.name;   // the game object that this script is attached to will give define the character name;
         numberOfDialogues = calculateNumberOfDialogues(); // calculate the number of dialogues with a helper function.
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
-        assembleDialogueFromXml();
-        
-        startDialogue();
+        assembleDialogueFromXml(); // assemble the dialogue with the helper function
+        startDialogue(); // after the dialogue is assembled we now start the dialogue by calling this helper functions
 
 
     }
@@ -108,18 +122,17 @@ public class DialogueSystem : MonoBehaviour
         return dialogueIndex;
     }
 
-
     private void handleDialogue(){
-        if (isDialogueActive)
-        {
-            if (!holdForResponse) //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
-            {
+        if (isDialogueActive){
+            if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
+                dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
                 if (currentDialogueIndex != -1){// and the dialogue is NO over (which -1 would indicate in the XML file under target)
                     displayDialogue(); // then we display dialogue
                 } 
-                else //if the dialogue is -1 then we must end the dialogue
-                {
+                else { //if the dialogue is -1 then we must end the dialogue
+                
                     isDialogueActive = false; //We set isDialogueActive to false as the id for the next target equals -1
+                    dialoguePanel.SetActive(false); // if the dialogue is over we set the dialoguePanel to inactive
                     holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
                     currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
 
@@ -130,7 +143,6 @@ public class DialogueSystem : MonoBehaviour
             }
         }
     }
-
 
     private void handleUserInputForResponse(){
         if (Input.GetKeyDown(KeyCode.Q)){
@@ -145,9 +157,14 @@ public class DialogueSystem : MonoBehaviour
     }
 
     private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
+        /*
         Debug.Log(dialogues[currentDialogueIndex].message);
         Debug.Log("1: " + dialogues[currentDialogueIndex].response[0]);
         Debug.Log("2: " + dialogues[currentDialogueIndex].response[1]);
+        */
+
+        string dialogueToDisplay = "[" + gameObject.name + "]" + " " + dialogues[currentDialogueIndex].message + "\n [A]> " + dialogues[currentDialogueIndex].response[0] + "\n [B]> " + dialogues[currentDialogueIndex].response[1];
+        GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay;
     }
 
     private void startDialogue(){ // hlper function that makes sure our dialogues start properly.
