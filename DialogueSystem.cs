@@ -22,20 +22,20 @@ using UnityEngine.UI; // this is very important to import this library so that t
 
 public class DialogueSystem : MonoBehaviour
 {
-    string characterName; // declaring a string containing the characters name
-    Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
-    int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
-    int currentDialogueIndex = 0; // declaring an initial index of 0;
+    private string characterName; // declaring a string containing the characters name
+    private Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
+    private int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
+    private int currentDialogueIndex = 0; // declaring an initial index of 0;
     
-    bool holdForResponse = false; // delclaring a bool which holds for a players response to dialogue choices
-    bool isDialogueActive = false; // I will use this bool to check if the dialogue is active currently.
+    private bool holdForResponse = false; // delclaring a bool which holds for a players response to dialogue choices
+    public bool isDialogueActive = false; // I will use this bool to check if the dialogue is active currently.
 
-    GameObject dialogueBox;
-    GameObject dialoguePanel;
+    private GameObject dialogueBox;
+    private GameObject dialoguePanel;
     
     
-    int dialogueIndex = 0;
-    int choiceIndex = 0;
+    private int dialogueIndex = 0;
+    private int choiceIndex = 0;
 
 
     // Start is called before the first frame update
@@ -46,9 +46,9 @@ public class DialogueSystem : MonoBehaviour
         dialogueBox = GameObject.Find("dialogueBox"); // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         dialoguePanel = GameObject.Find("dialoguePanel"); // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
 
-        GameObject.Find("dialogueImage").GetComponent<RawImage>().texture = Resources.Load<Texture2D>(gameObject.name) as Texture2D; //dialogue image for each NPC for the specific dialogue
-
-        dialoguePanel.SetActive(false); // we basically DO NOT want the dialogue panel to block the screen at the start of the game.
+        //GameObject.Find("dialogueImage").GetComponent<RawImage>().texture = Resources.Load<Texture2D>(gameObject.name) as Texture2D; //dialogue image for each NPC for the specific dialogue
+        // major issue here. Cant set this Panel to False or i get a Null Refrence error. May have to create a manager.
+        //dialoguePanel.SetActive(false); // we basically DO NOT want the dialogue panel to block the screen at the start of the game.
 
 
 
@@ -56,7 +56,7 @@ public class DialogueSystem : MonoBehaviour
         numberOfDialogues = calculateNumberOfDialogues(); // calculate the number of dialogues with a helper function.
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
         assembleDialogueFromXml(); // assemble the dialogue with the helper function
-        startDialogue(); // after the dialogue is assembled we now start the dialogue by calling this helper functions
+        //startDialogue(); // after the dialogue is assembled we now start the dialogue by calling this helper functions
 
 
     }
@@ -167,7 +167,7 @@ public class DialogueSystem : MonoBehaviour
         GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay;
     }
 
-    private void startDialogue(){ // hlper function that makes sure our dialogues start properly.
+    public void startDialogue(){ // hlper function that makes sure our dialogues start properly.
         holdForResponse = false;
         isDialogueActive = true;
     }
