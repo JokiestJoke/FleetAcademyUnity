@@ -4,50 +4,46 @@ using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
 {
+    /*
+    [Header("Visual Cue")]
+    [SerializeField] private GameObject visualCue;
+    */
 
-    private bool isPlayerInRange;
-    private GameObject npc;
+    GameObject NPC;
 
+    [Header("XML Document")]
+    [SerializeField] private TextAsset xmlDocumentTextAsset;
+
+    private bool playerInRange;
 
     private void Awake(){
-        isPlayerInRange = false; // when we start the game we want to make sure this bool is set ot false. The player and a collision will make it true later.
+        playerInRange = false;
+        //visualCue.SetActive(false);
+        NPC = gameObject;
     }
 
-    private void Start() {
-        npc = gameObject; 
-    }
-    
-    void Update(){
-        toggleDialogue();
-
-        
-    }
-
-    
-    private void toggleDialogue(){
-        if (isPlayerInRange == true && !gameObject.GetComponent<DialogueSystem>().isDialogueActive){
-            Debug.Log("The NPC's name is " + npc.name + " and has collided with the trigger"); // testing purposes
-            Debug.Log("Dialogue status is: " + gameObject.GetComponent<DialogueSystem>().isDialogueActive); // testing purposes
-
-            gameObject.GetComponent<DialogueSystem>().startDialogue();
-
-
-
+    private void Update()
+    {
+        if (playerInRange == true && !DialogueManager.getInstance().isDialogueActive){
+            //visualCue.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.F)){
+                DialogueManager.getInstance().startDialogue(xmlDocumentTextAsset, NPC.name);
+            }
+        } /*else {
+            visualCue.SetActive(false);
         }
+        */
     }
-    
 
     private void OnTriggerEnter(Collider other) {
-       if (other.gameObject.tag == "Player"){
-           isPlayerInRange = true;
-       }
-   }
-
-   private void OnTriggerExit(Collider other) {
         if (other.gameObject.tag == "Player"){
-           isPlayerInRange = false;
-       }
-   }
+            playerInRange = true;
+        }
+    }
 
-    
+    private void OnTriggerExit(Collider other) {
+            if (other.gameObject.tag == "Player"){
+            playerInRange = false;
+        }
+    }
 }

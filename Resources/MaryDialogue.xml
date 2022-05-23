@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialogues>
+
+	<character name = "Mary"> 
+		<dialogue id = "00" content= "My name is Mary and I wish you a good day">
+				
+					<choice content= "Hi there, would you know where I can find the golden globe?" target = "2"></choice>
+					<choice content= "Hi there, are you from here, Im kind of lost?" target = "1"></choice>
+				
+		</dialogue>
+		<dialogue id = "01" content= "Yes, Ive been living here for decades, what brings you here?" >
+				
+					<choice content= "I am looking for the golden globe" target = "2"></choice>
+					<choice content= "None of your business!" target = "-1"></choice>
+				
+		</dialogue>
+		<dialogue id = "02" content= "Haha, the Golden globe, yes; it is in the yellow house!">
+				
+					<choice content= "Thank you!" target = "-1"></choice>
+					<choice content= "Brilliant, would you also know about where to find the yellow house" target = "3"></choice>
+				
+		</dialogue>
+		<dialogue id = "03" content= "of course, this house is about 100 meters north from here!">
+				
+					<choice content= "Thanks man; much appreciated!" target = "-1"></choice>
+					<choice content= "Fantastic!" target = "-1"></choice>
+				
+		</dialogue>
+
+	</character>
+
+</dialogues>
