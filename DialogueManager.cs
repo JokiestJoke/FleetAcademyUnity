@@ -36,7 +36,7 @@ public class DialogueManager : MonoBehaviour
         return instance;
     }
 
-      private void Awake(){  // all thats needed in this awake is to error check to make sure there is not more than 1 instance of 
+    private void Awake(){  // all thats needed in this awake is to error check to make sure there is not more than 1 instance of 
         if (instance != null){
             Debug.LogWarning("Warning: DialogueManager Singleton -> More than 1 instance!");
         }
@@ -47,6 +47,12 @@ public class DialogueManager : MonoBehaviour
         dialogueBox = GameObject.Find("dialogueBox"); // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         dialoguePanel = GameObject.Find("dialoguePanel"); // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
+    }
+
+    private void Update(){
+
+        handleDialogue();
+
     }
 
     private int calculateNumberOfDialogues(TextAsset xmlDocumentTextAsset){
@@ -68,14 +74,12 @@ public class DialogueManager : MonoBehaviour
         holdForResponse = false;
         isDialogueActive = true;
         characterName = npcName;
-        Debug.Log(characterName);
-
-
+        //Debug.Log(characterName);
 
         numberOfDialogues = calculateNumberOfDialogues(xmlDocumentTextAsset); // calculate the number of dialogues with a helper function.
         Debug.Log("Number of Dialogues: " + numberOfDialogues);
-        //dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
-       // assembleDialogueFromXml(xmlDocumentTextAsset); // assemble the dialogue with the helper function
+        dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
+        assembleDialogueFromXml(xmlDocumentTextAsset); // assemble the dialogue with the helper function
     }
 
     private void assembleDialogueFromXml(TextAsset xmlDocumentTextAsset){
@@ -110,6 +114,51 @@ public class DialogueManager : MonoBehaviour
                 dialogues[dialogueIndex].targetForResponse[choiceIndex] = int.Parse(choice.Attributes.GetNamedItem("target").Value); // assign the targetForResponse attribute of the Dialogue object to the Parsed value of target
                 choiceIndex++; //increment choiceIndex everytime a node is complete
             }
+    }
+
+    private void handleDialogue(){
+        if (isDialogueActive){
+            if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
+                dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
+                if (currentDialogueIndex != -1){// and the dialogue is NO over (which -1 would indicate in the XML file under target)
+                    displayDialogue(); // then we display dialogue
+                } 
+                else { //if the dialogue is -1 then we must end the dialogue
+                
+                    isDialogueActive = false; //We set isDialogueActive to false as the id for the next target equals -1
+                    dialoguePanel.SetActive(false); // if the dialogue is over we set the dialoguePanel to inactive
+                    holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
+                    currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
+
+                }
+                holdForResponse = true; //we then wait for user input 
+            } else {
+                handleUserInputForResponse();
+            }
+        }
+    }
+
+    private void handleUserInputForResponse(){
+        if (Input.GetKeyDown(KeyCode.Q)){
+            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
+            holdForResponse = false;
+            //Debug.Log("Q is pressed"); //keep for testing
+        } else if (Input.GetKeyDown(KeyCode.E)){
+            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
+            holdForResponse = false;
+            //Debug.Log("E is pressed"); // keep for testing
+        }
+    }
+
+    private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
+        
+        /*
+        Debug.Log(dialogues[currentDialogueIndex].message);
+        Debug.Log("1: " + dialogues[currentDialogueIndex].response[0]);
+        Debug.Log("2: " + dialogues[currentDialogueIndex].response[1]);
+        */
+        string dialogueToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message + "\n [A]> " + dialogues[currentDialogueIndex].response[0] + "\n [B]> " + dialogues[currentDialogueIndex].response[1];
+        GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay; 
     }
 
 }
