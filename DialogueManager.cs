@@ -12,6 +12,7 @@ public class DialogueManager : MonoBehaviour
     private string characterName; // declaring a string containing the characters name
     private Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
     private int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
+    private int numberOfResponses;
     private int currentDialogueIndex = 0; // declaring an initial index of 0;
     
     private bool holdForResponse; // delclaring a bool which holds for a players response to dialogue choices
@@ -26,10 +27,8 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject[] choiceButtons; // choices that will correspond to the Buttons in unity
     private TextMeshProUGUI[] choicesText;
     
-    
-    
-    private int dialogueIndex = 0;
-    private int choiceIndex = 0;
+    private int dialogueIndex;
+    private int choiceIndex;
 
     private static DialogueManager instance; // declare instance so we can create a singleton.
 
@@ -47,13 +46,19 @@ public class DialogueManager : MonoBehaviour
 
     private void Start(){
 
+        dialogueIndex = 0;
+        choiceIndex = 0;
+
         isDialogueActive = false; // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         holdForResponse = false; // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
 
-        choicesText = new TextMeshProUGUI[choices.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
+        choicesText = new TextMeshProUGUI[choiceButtons.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
 
         setupButtonsAtStart(); // call helper function to set up buttons at start of the frame.
+
+        //int numResponses = calculateNumberOfResponses();
+        //Debug.Log(numResponses);
 
         
     
@@ -74,6 +79,8 @@ public class DialogueManager : MonoBehaviour
     } 
 
     private void displayResponsesToButtons(){
+        //string[] currentResponses = new string[dialogues.response.Length];
+        string[] currentResponses;
 
     }
 
@@ -94,21 +101,34 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-
+    private int calculateNumberOfResponses(TextAsset xmlTextAsset){
+        XmlDocument xmlDocument = new XmlDocument();
+        xmlDocument.LoadXml(xmlTextAsset.text);
+        int resonseCount = 0;
+        
+        foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //for each child character node in the dialogues parent node
+            if (character.Attributes.GetNamedItem("name").Value == characterName){ // if the dialogues character name equals the NPC's name
+                foreach(XmlNode responseDialogue in xmlDocument.SelectNodes("dialogues/character/dialogue/choice")){
+                    resonseCount++;// we increment the dialogueIndex for each dialogue, and we return the final index as the final number of dialogues
+                }
+            }
+        }
+        return resonseCount;
+    }
 
     private int calculateNumberOfDialogues(TextAsset xmlTextAsset){
         XmlDocument xmlDocument = new XmlDocument();
         xmlDocument.LoadXml(xmlTextAsset.text);
-        int dialogueIndex = 0;
+        int dialogueCount = 0;
 
         foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //for each child character node in the dialogues parent node
             if (character.Attributes.GetNamedItem("name").Value == characterName){ // if the dialogues character name equals the NPC's name
                 foreach(XmlNode dialogueFromXML in xmlDocument.SelectNodes("dialogues/character/dialogue")){
-                    dialogueIndex++;// we increment the dialogueIndex for each dialogue, and we return the final index as the final number of dialogues
+                    dialogueCount++;// we increment the dialogueIndex for each dialogue, and we return the final index as the final number of dialogues
                 }
             }
         }
-        return dialogueIndex;
+        return dialogueCount;
     }
 
     public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
@@ -118,6 +138,8 @@ public class DialogueManager : MonoBehaviour
         //Debug.Log(characterName);
 
         numberOfDialogues = calculateNumberOfDialogues(xmlTextAsset); // calculate the number of dialogues with a helper function.
+        numberOfResponses = calculateNumberOfResponses(xmlTextAsset);
+        Debug.Log("Number of Responses: " + numberOfResponses);
         //Debug.Log("Number of Dialogues: " + numberOfDialogues);
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
         assembleDialoguesFromXml(xmlTextAsset); // assemble the dialogue with the helper function
