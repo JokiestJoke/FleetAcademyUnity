@@ -21,6 +21,10 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
     //[SerializeField] private TextMeshProUGUI displayNameText;
+
+    [Header("Choices UI")]
+    [SerializeField] private GameObject[] choiceButtons; // choices that will correspond to the Buttons in unity
+    private TextMeshProUGUI[] choicesText;
     
     
     
@@ -46,12 +50,30 @@ public class DialogueManager : MonoBehaviour
         isDialogueActive = false; // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         holdForResponse = false; // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
+
+        choicesText = new TextMeshProUGUI[choices.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
+
+        setupButtonsAtStart(); // call helper function to set up buttons at start of the frame.
+
+        
     
     }
 
     private void Update(){
 
         manageDialogue();
+
+    }
+
+    private void setupButtonsAtStart(){ //helper function to setup the buttons with the TextMeshPROGUI components attached to them. essential for displaying text.
+        int choiceIndex = 0;
+        foreach(GameObject choice in choiceButtons){
+            choicesText[choiceIndex] = choice.GetComponentInChildren<TextMeshProUGUI>();
+            choiceIndex++;
+        }
+    } 
+
+    private void displayResponsesToButtons(){
 
     }
 
@@ -72,6 +94,8 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+
+
     private int calculateNumberOfDialogues(TextAsset xmlTextAsset){
         XmlDocument xmlDocument = new XmlDocument();
         xmlDocument.LoadXml(xmlTextAsset.text);
@@ -88,7 +112,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
-        holdForResponse = false;
+        holdForResponse = false; 
         isDialogueActive = true;
         characterName = npcName;
         //Debug.Log(characterName);
@@ -96,7 +120,7 @@ public class DialogueManager : MonoBehaviour
         numberOfDialogues = calculateNumberOfDialogues(xmlTextAsset); // calculate the number of dialogues with a helper function.
         //Debug.Log("Number of Dialogues: " + numberOfDialogues);
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
-        assembleDialogueFromXml(xmlTextAsset); // assemble the dialogue with the helper function
+        assembleDialoguesFromXml(xmlTextAsset); // assemble the dialogue with the helper function
     }
 
     private void endDialogue(){
@@ -107,7 +131,7 @@ public class DialogueManager : MonoBehaviour
         dialogueText.text = "";
     }
 
-    private void assembleDialogueFromXml(TextAsset xmlTextAsset){
+    private void assembleDialoguesFromXml(TextAsset xmlTextAsset){
         XmlDocument xmlDocument = new XmlDocument();
         xmlDocument.LoadXml(xmlTextAsset.text);
         dialogueIndex = 0;  // make sure the anytime we load dialogue its index starts at 0. 
@@ -115,12 +139,12 @@ public class DialogueManager : MonoBehaviour
         foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //We loop through each node called character under the parent node dialogues.
             if (character.Attributes.GetNamedItem("name").Value == characterName){//we check if the character nodes 'name' attribute is equal to the value of the GameObjects name.
                 dialogueIndex = 0; //making sure the dialogueIndex is set to 0
-                populateDialogue(xmlDocument); // calling a helper function
+                loadDialogueNodes(xmlDocument); // calling a helper function
             }
         }
     }
 
-    private void populateDialogue(XmlDocument xmlDocument){
+    private void loadDialogueNodes(XmlDocument xmlDocument){
        foreach(XmlNode dialogueFromXML in xmlDocument.SelectNodes("dialogues/character/dialogue")){ // we loop through the dialogue node that is a child of character
             dialogues[dialogueIndex] = new Dialogue(); //create a new Dialogue Object for each dialogue we find. Store it in an array.
             dialogues[dialogueIndex].message = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
@@ -128,12 +152,12 @@ public class DialogueManager : MonoBehaviour
 
             dialogues[dialogueIndex].response = new string[2]; //define the size of the response array for this Dialogue Object
             dialogues[dialogueIndex].targetForResponse = new int [2]; //define the size of the targetForResponse array for this Dialogue Object
-            populateResponses(dialogueFromXML); // calling a helper function
+            loadResponsesNodes(dialogueFromXML); // calling a helper function
             dialogueIndex++; // increment dialogueIndex everytime a Dialogue Object is created
         }
     }
 
-    private void populateResponses(XmlNode xmlNode){
+    private void loadResponsesNodes(XmlNode xmlNode){
         foreach(XmlNode choice in xmlNode){ //loop through each choice node that is a child of the corresponding dialogue node
                 dialogues[dialogueIndex].response[choiceIndex] = choice.Attributes.GetNamedItem("content").Value;//assign the response attribute of the Dialogue object to the choice's content
                 dialogues[dialogueIndex].targetForResponse[choiceIndex] = int.Parse(choice.Attributes.GetNamedItem("target").Value); // assign the targetForResponse attribute of the Dialogue object to the Parsed value of target
