@@ -42,11 +42,21 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime; // attempting to capture the mouse movement to affect the camera.
+        //freeze the player if dialogue is active
+        if (DialogueManager.getInstance().isDialogueActive){
+            //enableGUIMouseControl();
+            return;
+        } /*else {
+            disableGUIMouseControl();
+        }*/
+        
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime; // attempting to capture the mouse movement to affect the camera.
         
         playerMoveHandler();
         cameraZoomHandler();
         rotateXAxis(mouseX);
+
+        
         
     }
     private void FixedUpdate() {

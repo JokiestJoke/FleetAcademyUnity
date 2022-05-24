@@ -14,15 +14,13 @@ public class DialogueManager : MonoBehaviour
     private int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
     private int currentDialogueIndex = 0; // declaring an initial index of 0;
     
-    private bool holdForResponse = false; // delclaring a bool which holds for a players response to dialogue choices
-    public bool isDialogueActive = false; // I will use this bool to check if the dialogue is active currently.
+    private bool holdForResponse; // delclaring a bool which holds for a players response to dialogue choices
+    public bool isDialogueActive; // I will use this bool to check if the dialogue is active currently.
 
     [Header("Dialogue UI")]
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
-    [SerializeField] private TextMeshProUGUI displayNameText;
-
-    private GameObject dialogueBox; // lets see if we need to use this...
+    //[SerializeField] private TextMeshProUGUI displayNameText;
     
     
     
@@ -44,20 +42,39 @@ public class DialogueManager : MonoBehaviour
     }
 
     private void Start(){
-        dialogueBox = GameObject.Find("dialogueBox"); // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
-        dialoguePanel = GameObject.Find("dialoguePanel"); // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
+
+        isDialogueActive = false; // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
+        holdForResponse = false; // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
+    
     }
 
     private void Update(){
 
-        handleDialogue();
+        manageDialogue();
 
     }
 
-    private int calculateNumberOfDialogues(TextAsset xmlDocumentTextAsset){
+    private void manageDialogue(){
+        if (isDialogueActive){
+            if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
+                dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
+                if (currentDialogueIndex != -1){// and the dialogue is NOT finished (which -1 would indicate in the XML file under target)
+                    displayDialogue(); // then we display dialogue
+                } 
+                else { //if the dialogue is -1 then we must end the dialogue
+                    endDialogue();
+                }
+                holdForResponse = true; //we then wait for user input 
+            } else {
+                handleUserInputForResponse();
+            }
+        }
+    }
+
+    private int calculateNumberOfDialogues(TextAsset xmlTextAsset){
         XmlDocument xmlDocument = new XmlDocument();
-        xmlDocument.LoadXml(xmlDocumentTextAsset.text);
+        xmlDocument.LoadXml(xmlTextAsset.text);
         int dialogueIndex = 0;
 
         foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //for each child character node in the dialogues parent node
@@ -70,21 +87,29 @@ public class DialogueManager : MonoBehaviour
         return dialogueIndex;
     }
 
-    public void startDialogue(TextAsset xmlDocumentTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
+    public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
         holdForResponse = false;
         isDialogueActive = true;
         characterName = npcName;
         //Debug.Log(characterName);
 
-        numberOfDialogues = calculateNumberOfDialogues(xmlDocumentTextAsset); // calculate the number of dialogues with a helper function.
-        Debug.Log("Number of Dialogues: " + numberOfDialogues);
+        numberOfDialogues = calculateNumberOfDialogues(xmlTextAsset); // calculate the number of dialogues with a helper function.
+        //Debug.Log("Number of Dialogues: " + numberOfDialogues);
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
-        assembleDialogueFromXml(xmlDocumentTextAsset); // assemble the dialogue with the helper function
+        assembleDialogueFromXml(xmlTextAsset); // assemble the dialogue with the helper function
     }
 
-    private void assembleDialogueFromXml(TextAsset xmlDocumentTextAsset){
+    private void endDialogue(){
+        isDialogueActive = false; //We set isDialogueActive to false as the id for the next target equals -1
+        dialoguePanel.SetActive(false); // if the dialogue is over we set the dialoguePanel to inactive
+        holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
+        currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
+        dialogueText.text = "";
+    }
+
+    private void assembleDialogueFromXml(TextAsset xmlTextAsset){
         XmlDocument xmlDocument = new XmlDocument();
-        xmlDocument.LoadXml(xmlDocumentTextAsset.text);
+        xmlDocument.LoadXml(xmlTextAsset.text);
         dialogueIndex = 0;  // make sure the anytime we load dialogue its index starts at 0. 
 
         foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //We loop through each node called character under the parent node dialogues.
@@ -102,7 +127,7 @@ public class DialogueManager : MonoBehaviour
             choiceIndex = 0; // reset the choice index. 
 
             dialogues[dialogueIndex].response = new string[2]; //define the size of the response array for this Dialogue Object
-            dialogues[dialogueIndex].targetForResponse = new int [2]; //define the size of the argetForResponse array for this Dialogue Object
+            dialogues[dialogueIndex].targetForResponse = new int [2]; //define the size of the targetForResponse array for this Dialogue Object
             populateResponses(dialogueFromXML); // calling a helper function
             dialogueIndex++; // increment dialogueIndex everytime a Dialogue Object is created
         }
@@ -113,28 +138,6 @@ public class DialogueManager : MonoBehaviour
                 dialogues[dialogueIndex].response[choiceIndex] = choice.Attributes.GetNamedItem("content").Value;//assign the response attribute of the Dialogue object to the choice's content
                 dialogues[dialogueIndex].targetForResponse[choiceIndex] = int.Parse(choice.Attributes.GetNamedItem("target").Value); // assign the targetForResponse attribute of the Dialogue object to the Parsed value of target
                 choiceIndex++; //increment choiceIndex everytime a node is complete
-            }
-    }
-
-    private void handleDialogue(){
-        if (isDialogueActive){
-            if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
-                dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
-                if (currentDialogueIndex != -1){// and the dialogue is NO over (which -1 would indicate in the XML file under target)
-                    displayDialogue(); // then we display dialogue
-                } 
-                else { //if the dialogue is -1 then we must end the dialogue
-                
-                    isDialogueActive = false; //We set isDialogueActive to false as the id for the next target equals -1
-                    dialoguePanel.SetActive(false); // if the dialogue is over we set the dialoguePanel to inactive
-                    holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
-                    currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
-
-                }
-                holdForResponse = true; //we then wait for user input 
-            } else {
-                handleUserInputForResponse();
-            }
         }
     }
 
@@ -158,7 +161,8 @@ public class DialogueManager : MonoBehaviour
         Debug.Log("2: " + dialogues[currentDialogueIndex].response[1]);
         */
         string dialogueToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message + "\n [A]> " + dialogues[currentDialogueIndex].response[0] + "\n [B]> " + dialogues[currentDialogueIndex].response[1];
-        GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay; 
+        dialogueText.text = dialogueToDisplay;
+        //GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay; 
     }
 
 }
