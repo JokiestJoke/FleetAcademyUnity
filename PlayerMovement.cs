@@ -18,12 +18,14 @@ public class PlayerMovement : MonoBehaviour
     
     private Vector3 playerVelocity; 
 
+     private GUIManager GUIManager;
 
-    
-    
     // Start is called before the first frame update
     void Start()
     {
+        //initialize a new GuiManager, I will use this to control basic GUI functions
+        GUIManager = new GUIManager();
+        
         //initializing character Controller component
         characterController = GetComponent<CharacterController>();
         if (characterController == null){
@@ -44,11 +46,11 @@ public class PlayerMovement : MonoBehaviour
     {
         //freeze the player if dialogue is active
         if (DialogueManager.getInstance().isDialogueActive){
-            //enableGUIMouseControl();
+            GUIManager.enableGUIMouseControl();
             return;
-        } /*else {
-            disableGUIMouseControl();
-        }*/
+        } else {
+            GUIManager.disableGUIMouseControl();
+        }
         
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime; // attempting to capture the mouse movement to affect the camera.
         
@@ -101,19 +103,6 @@ public class PlayerMovement : MonoBehaviour
     private void rotateXAxis(float mouseX){
         //rotate the player based on the X input of the mouse.
         transform.Rotate(Vector3.up * mouseX * 3);
-    }
-
-    
-    private void enableGUIMouseControl(){
-        //we enable the cusor to move indepdently from the  camera (confined to screen) & we make it cursor visible
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
-    }
-
-    private void disableGUIMouseControl(){
-        //we disable the cursor from being able to move independently from the  camera (locked instead of confined) & we make the cursor invisble
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
 }
