@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
-using UnityEngine.UI; // this is very important to import this library so that this file can manipulate the unity UI I created
+using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
@@ -170,19 +170,30 @@ public class DialogueManager : MonoBehaviour
     }
 
     private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
-        string dialogueTextToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message;
-        dialogueText.text = dialogueTextToDisplay;
+        string dialogueTextToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message; // creating a string to display to the dialogueText GameObject
+        dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
         //Debug.Log("Number of Responses: " + dialogues[currentDialogueIndex].response.Length);
     }
 
-    private void displayResponsesToButtons(){
+    private void displayResponsesToButtons(){ // for every Response of the currentDialogueIndex we set the text of the button to the response of the Dialogue.response array.
         int index = 0;
-        foreach(string response in dialogues[currentDialogueIndex].response){
-            Debug.Log("Response: " + response);
-            choiceButtons[index].gameObject.SetActive(true);
-            choicesText[index].text = response;
+        foreach(string response in dialogues[currentDialogueIndex].response){ //looping through the response array of the dialogue
+            Debug.Log("Response: " + response); //for testing
+            choiceButtons[index].gameObject.SetActive(true); // activating the buttons to show. By default at game start they are invisible.
+            choicesText[index].text = response; // assign the button.text the response(s) of the current dialogue. 
             index++;
         }
-        
+        deactivateIdleButtons(index);
+    }
+
+    private void deactivateIdleButtons(int indexOfLastActiveButton){ //not all dialogues with have the max options. this function will hide the buttons w/o a corresponding response
+        int index;
+        for(index = indexOfLastActiveButton; index < choiceButtons.Length; index++){
+            choiceButtons[index].gameObject.SetActive(false); // set false and idle buttons.
+        }
+    }
+
+    private void makeResponseChoice(int targetForResponseIndex){
+        currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[targetForResponseIndex];
     }
 }
