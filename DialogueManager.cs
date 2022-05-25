@@ -54,14 +54,7 @@ public class DialogueManager : MonoBehaviour
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
 
         choicesText = new TextMeshProUGUI[choiceButtons.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
-
         setupButtonsAtStart(); // call helper function to set up buttons at start of the frame.
-
-        //int numResponses = calculateNumberOfResponses();
-        //Debug.Log(numResponses);
-
-        
-    
     }
 
     private void Update(){
@@ -78,18 +71,13 @@ public class DialogueManager : MonoBehaviour
         }
     } 
 
-    private void displayResponsesToButtons(){
-        //string[] currentResponses = new string[dialogues.response.Length];
-        string[] currentResponses;
-
-    }
-
     private void manageDialogue(){
         if (isDialogueActive){
             if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
                 dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
                 if (currentDialogueIndex != -1){// and the dialogue is NOT finished (which -1 would indicate in the XML file under target)
                     displayDialogue(); // then we display dialogue
+                    displayResponsesToButtons(); 
                 } 
                 else { //if the dialogue is -1 then we must end the dialogue
                     endDialogue();
@@ -99,21 +87,6 @@ public class DialogueManager : MonoBehaviour
                 handleUserInputForResponse();
             }
         }
-    }
-
-    private int calculateNumberOfResponses(TextAsset xmlTextAsset){
-        XmlDocument xmlDocument = new XmlDocument();
-        xmlDocument.LoadXml(xmlTextAsset.text);
-        int resonseCount = 0;
-        
-        foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //for each child character node in the dialogues parent node
-            if (character.Attributes.GetNamedItem("name").Value == characterName){ // if the dialogues character name equals the NPC's name
-                foreach(XmlNode responseDialogue in xmlDocument.SelectNodes("dialogues/character/dialogue/choice")){
-                    resonseCount++;// we increment the dialogueIndex for each dialogue, and we return the final index as the final number of dialogues
-                }
-            }
-        }
-        return resonseCount;
     }
 
     private int calculateNumberOfDialogues(TextAsset xmlTextAsset){
@@ -138,9 +111,6 @@ public class DialogueManager : MonoBehaviour
         //Debug.Log(characterName);
 
         numberOfDialogues = calculateNumberOfDialogues(xmlTextAsset); // calculate the number of dialogues with a helper function.
-        numberOfResponses = calculateNumberOfResponses(xmlTextAsset);
-        Debug.Log("Number of Responses: " + numberOfResponses);
-        //Debug.Log("Number of Dialogues: " + numberOfDialogues);
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
         assembleDialoguesFromXml(xmlTextAsset); // assemble the dialogue with the helper function
     }
@@ -200,15 +170,19 @@ public class DialogueManager : MonoBehaviour
     }
 
     private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
-        
-        /*
-        Debug.Log(dialogues[currentDialogueIndex].message);
-        Debug.Log("1: " + dialogues[currentDialogueIndex].response[0]);
-        Debug.Log("2: " + dialogues[currentDialogueIndex].response[1]);
-        */
-        string dialogueToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message + "\n [A]> " + dialogues[currentDialogueIndex].response[0] + "\n [B]> " + dialogues[currentDialogueIndex].response[1];
-        dialogueText.text = dialogueToDisplay;
-        //GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay; 
+        string dialogueTextToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message;
+        dialogueText.text = dialogueTextToDisplay;
+        //Debug.Log("Number of Responses: " + dialogues[currentDialogueIndex].response.Length);
     }
 
+    private void displayResponsesToButtons(){
+        int index = 0;
+        foreach(string response in dialogues[currentDialogueIndex].response){
+            Debug.Log("Response: " + response);
+            choiceButtons[index].gameObject.SetActive(true);
+            choicesText[index].text = response;
+            index++;
+        }
+        
+    }
 }
