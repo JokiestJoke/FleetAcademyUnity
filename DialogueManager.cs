@@ -1,10 +1,19 @@
 /*
 Author: Mark Doghramji
+LinkedIn: https://www.linkedin.com/in/mark-doghramji/
 Last Update: 5/26/2022
 Notes:
-This class manages the Dialogue per NPC and works in chorus with the file DialogueTrigger.cs 
-*/
+This class manages the Dialogue per NPC and works in chorus with the file DialogueTrigger.cs. Essentially, an NPC will pass a string NPCname variable and a XML file.
+The DialogueManager will parse through the nodes of the XML, and populate (a) Dialogue Object(s). These Dialogue Objects will be stored in an array, which I use to logically
+handle dialogue and user input. This class is a Singleton as we need exactly 1 DialogueManager. This DialogueManager is attached to a empty game object in the game's
+hierarchy.
 
+To do: A quick discussion on Single Responsibility Classes ---> this class in my opinion breaks the SRC theory. In other words, should the manager "manage" the dialogue
+and the user input solely. Right now the mananger ALSO parses out the Dialogue Objects from an XML. Ideally, I should have a seperate class called "XMLDialogueReader"
+with public methods interacting with this DialogueManager in some manner. In truth I could make an arguement for why breaking or not the SRC principle is or is not a big deal 
+in this case. However, I shall in a future attempt try to pivot and commit to a design decision that promotes SRC and hopefully make the code in this file a bit more contained logically
+and clean to read.
+*/
 
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +30,7 @@ public class DialogueManager : MonoBehaviour
     private Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
     private int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
     private int numberOfResponses;
-    private int currentDialogueIndex = 0; // declaring an initial index of 0;
+    private int currentDialogueIndex; // declaring an initial index of 0;
     
     private bool holdForResponse; // delclaring a bool which holds for a players response to dialogue choices
     public bool isDialogueActive; // I will use this bool to check if the dialogue is active currently.
@@ -54,8 +63,9 @@ public class DialogueManager : MonoBehaviour
 
     private void Start(){
 
-        dialogueIndex = 0;
-        choiceIndex = 0;
+        currentDialogueIndex = 0; //initialize current dialogueIndex at 0
+        dialogueIndex = 0; //initialize current dialogueIndex at 0
+        choiceIndex = 0; //initialize current dialogueIndex at 0
 
         isDialogueActive = false; // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         holdForResponse = false; // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
