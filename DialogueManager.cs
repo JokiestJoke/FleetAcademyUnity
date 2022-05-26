@@ -1,3 +1,11 @@
+/*
+Author: Mark Doghramji
+Last Update: 5/26/2022
+Notes:
+This class manages the Dialogue per NPC and works in chorus with the file DialogueTrigger.cs 
+*/
+
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
@@ -69,7 +77,7 @@ public class DialogueManager : MonoBehaviour
             choicesText[choiceIndex] = choice.GetComponentInChildren<TextMeshProUGUI>();
             choiceIndex++;
         }
-    } 
+    }
 
     private void manageDialogue(){
         if (isDialogueActive){
@@ -83,8 +91,6 @@ public class DialogueManager : MonoBehaviour
                     endDialogue();
                 }
                 holdForResponse = true; //we then wait for user input 
-            } else {
-                handleUserInputForResponse();
             }
         }
     }
@@ -105,10 +111,9 @@ public class DialogueManager : MonoBehaviour
     }
 
     public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
-        holdForResponse = false; 
-        isDialogueActive = true;
-        characterName = npcName;
-        //Debug.Log(characterName);
+        holdForResponse = false;// we start the dialogue so we do not hold
+        isDialogueActive = true;// we state there is active dialogue
+        characterName = npcName;// get the NPC name from the collision
 
         numberOfDialogues = calculateNumberOfDialogues(xmlTextAsset); // calculate the number of dialogues with a helper function.
         dialogues = new Dialogue[numberOfDialogues]; // initializing an array of Dialogue objects with a size of the total number of dialogue options on a character basis
@@ -142,8 +147,8 @@ public class DialogueManager : MonoBehaviour
             dialogues[dialogueIndex].message = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
             choiceIndex = 0; // reset the choice index. 
 
-            dialogues[dialogueIndex].response = new string[2]; //define the size of the response array for this Dialogue Object
-            dialogues[dialogueIndex].targetForResponse = new int [2]; //define the size of the targetForResponse array for this Dialogue Object
+            dialogues[dialogueIndex].response = new string[3]; //define the size of the response array for this Dialogue Object
+            dialogues[dialogueIndex].targetForResponse = new int [3]; //define the size of the targetForResponse array for this Dialogue Object
             loadResponsesNodes(dialogueFromXML); // calling a helper function
             dialogueIndex++; // increment dialogueIndex everytime a Dialogue Object is created
         }
@@ -154,18 +159,6 @@ public class DialogueManager : MonoBehaviour
                 dialogues[dialogueIndex].response[choiceIndex] = choice.Attributes.GetNamedItem("content").Value;//assign the response attribute of the Dialogue object to the choice's content
                 dialogues[dialogueIndex].targetForResponse[choiceIndex] = int.Parse(choice.Attributes.GetNamedItem("target").Value); // assign the targetForResponse attribute of the Dialogue object to the Parsed value of target
                 choiceIndex++; //increment choiceIndex everytime a node is complete
-        }
-    }
-
-    private void handleUserInputForResponse(){
-        if (Input.GetKeyDown(KeyCode.Q)){
-            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[0];
-            holdForResponse = false;
-            //Debug.Log("Q is pressed"); //keep for testing
-        } else if (Input.GetKeyDown(KeyCode.E)){
-            currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[1];
-            holdForResponse = false;
-            //Debug.Log("E is pressed"); // keep for testing
         }
     }
 
@@ -183,7 +176,7 @@ public class DialogueManager : MonoBehaviour
             choicesText[index].text = response; // assign the button.text the response(s) of the current dialogue. 
             index++;
         }
-        deactivateIdleButtons(index);
+        deactivateIdleButtons(index); // call helper function to deactivate 
     }
 
     private void deactivateIdleButtons(int indexOfLastActiveButton){ //not all dialogues with have the max options. this function will hide the buttons w/o a corresponding response
@@ -193,7 +186,10 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void makeResponseChoice(int targetForResponseIndex){
+    //this method will be used on the buttons OnClick Function. This will not be called in this file, rather only defined.
+    //For future refrence see that the gameObject choiceButtons have DialogueManager.makeResponseChoice() called when the specific buttons is pressed!
+    public void makeResponseChoice(int targetForResponseIndex){
         currentDialogueIndex = dialogues[currentDialogueIndex].targetForResponse[targetForResponseIndex];
+        holdForResponse = false;
     }
 }
