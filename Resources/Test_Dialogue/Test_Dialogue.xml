@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialogues>
+
+	<character name = "Test_NPC"> 
+		<dialogue id = "00" content= "My name is Test_NPC and I'm just a boring test">
+				
+					<choice content= "Hi there, can you tell me more about yourself?" target = "2"></choice>
+					<choice content= "Hi there, I am glad to meet you!" target = "1"></choice>
+				
+		</dialogue>
+		<dialogue id = "01" content= "I am glad to meet you too, is there anything else I can help you with?" >
+				
+					<choice content= "Yeah, tell me more about yourself!" target = "2"></choice>
+					<choice content= "Nope, have a good day!" target = "-1"></choice>
+				
+		</dialogue>
+		<dialogue id = "02" content= "Well, I'm just a Test NPC. Nothing special here">
+				
+					<choice content= "Thank you, goodbye!" target = "-1"></choice>
+					<choice content= "Theres nothing more you want to share?" target = "3"></choice>
+				
+		</dialogue>
+		<dialogue id = "03" content= "Oh did I mention I am an NPC?">
+				
+					<choice content= "Yep" target = "-1"></choice>
+					<choice content= "yeah.... you did" target = "-1"></choice>
+				
+		</dialogue>
+
+	</character>
+
+</dialogues>

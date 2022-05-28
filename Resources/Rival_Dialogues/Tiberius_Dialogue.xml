@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialogues>
+
+	<character name = "Tiberius_Claudius"> 
+		<dialogue id = "00" content= "Hey, you! Watch where you're going! Don't you know who my father is?">
+				
+					<choice content= "...I'm..." target = "1"></choice>
+				
+		</dialogue>
+		<dialogue id = "01" content= "You should be! My father is a 'Grand Admiral', and you clearly come from a lower family.">
+				
+					<choice content= "...But..." target = "2"></choice>
+				
+		</dialogue>
+		<dialogue id = "02" content= "I come from one of the most renown families ever to serve THE Fleet. Can't you recognize a son of the proud Julio-Claudian Dynasty?">
+				
+					<choice content= " ... " target = "3"></choice>
+				
+		</dialogue>
+		<dialogue id = "03" content= "HA! You are more fool than I thought. My name is Tiberius Claudius. Do not forget my name, as I will one day be the greatest Admiral to serve the fleet!">
+				
+					<choice content= " ... " target = "4"></choice>
+				
+		</dialogue>
+		<dialogue id = "04" content= "Now get out of my way, you fool!">
+			
+			<choice content= " ... " target = "-1"></choice>
+		
+		</dialogue>
+	</character>
+
+</dialogues>
