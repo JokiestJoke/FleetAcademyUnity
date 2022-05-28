@@ -19,10 +19,10 @@ using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
 {
-    /*
+    
     [Header("Visual Cue")]
     [SerializeField] private GameObject visualCue; /// need artword for visual cue before calling it in game. Will create in Asperite later.
-    */
+    
 
     GameObject NPC;
 
@@ -33,21 +33,21 @@ public class DialogueTrigger : MonoBehaviour
 
     private void Awake(){
         playerInRange = false;
-        //visualCue.SetActive(false);
+        visualCue.SetActive(false);
         NPC = gameObject;
     }
 
     private void Update()
     {
         if (playerInRange == true && !DialogueManager.getInstance().isDialogueActive){
-            //visualCue.SetActive(true);
+            visualCue.SetActive(true);
             if (Input.GetKeyDown(KeyCode.F)){
                 DialogueManager.getInstance().startDialogue(xmlDocumentTextAsset, NPC.name);
             }
-        } /*else {
+        } else {
             visualCue.SetActive(false);
         }
-        */
+        
     }
 
     private void OnTriggerEnter(Collider other) {
