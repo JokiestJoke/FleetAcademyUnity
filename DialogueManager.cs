@@ -28,7 +28,7 @@ public class DialogueManager : MonoBehaviour
 {
     private string characterName; // declaring a string containing the characters name
     private Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
-    private int numberOfDialogues; // declaring an integer for total number of dialogues on a character basis
+    private int numberOfDialogues; 
     private int numberOfResponses;
     private int currentDialogueIndex; // declaring an initial index of 0;
     
@@ -47,6 +47,8 @@ public class DialogueManager : MonoBehaviour
     private int dialogueIndex;
     private int choiceIndex;
 
+    private StringAssembler stringAssembler; //declaring a NameAssembler object to stringify names by delimiters
+
     private static DialogueManager instance; // declare instance so we can create a singleton.
 
 
@@ -62,6 +64,8 @@ public class DialogueManager : MonoBehaviour
     }
 
     private void Start(){
+
+        stringAssembler = new StringAssembler(); // initializing a new name assembler
 
         currentDialogueIndex = 0; //initialize current dialogueIndex at 0
         dialogueIndex = 0; //initialize current dialogueIndex at 0
@@ -154,11 +158,17 @@ public class DialogueManager : MonoBehaviour
     private void loadDialogueNodes(XmlDocument xmlDocument){
        foreach(XmlNode dialogueFromXML in xmlDocument.SelectNodes("dialogues/character/dialogue")){ // we loop through the dialogue node that is a child of character
             dialogues[dialogueIndex] = new Dialogue(); //create a new Dialogue Object for each dialogue we find. Store it in an array.
+            
+            string NPCname = stringAssembler.assembleString(characterName); //create a NPC name by calling name assembler on characterName. 
+            
+            dialogues[dialogueIndex].characterName = NPCname; //assign the current dialogue the newly created npc name
             dialogues[dialogueIndex].message = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
+            
             choiceIndex = 0; // reset the choice index. 
 
             dialogues[dialogueIndex].response = new string[3]; //define the size of the response array for this Dialogue Object
             dialogues[dialogueIndex].targetForResponse = new int [3]; //define the size of the targetForResponse array for this Dialogue Object
+            
             loadResponsesNodes(dialogueFromXML); // calling a helper function
             dialogueIndex++; // increment dialogueIndex everytime a Dialogue Object is created
         }
@@ -172,7 +182,7 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void displayDialogue(){ // helper fucntion for testing. In reality the button mapping will not be a keyboard button but a clickable one.
+    private void displayDialogue(){ // Helper function that displays the message of the current dialogue
         string dialogueTextToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message; // creating a string to display to the dialogueText GameObject
         dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
         //Debug.Log("Number of Responses: " + dialogues[currentDialogueIndex].response.Length);
