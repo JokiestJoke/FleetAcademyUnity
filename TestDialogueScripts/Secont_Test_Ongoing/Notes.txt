@@ -1,0 +1,4 @@
+This file holds my current test (5/29) for creating an XML reader. Essentially I plan on using .xml for most batch text data. This means that I will want to have
+an XMLReader abstraction that I can use to create child class readers (such as DialogueXMLReader.cs). If this test works, I believe I can reinforce Single Responsibility class
+theory on DialogueManager.cs (and future files) and refracted the logic of loading a parsing the data to a seperate file. This way DialogueManager.cs only focuses on managing the dialogue
+and hopefully creates a cleaner file structure.

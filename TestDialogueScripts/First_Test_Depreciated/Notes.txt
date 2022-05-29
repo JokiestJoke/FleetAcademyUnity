@@ -1,0 +1,6 @@
+Short Notes on why this attempt at creating a dialogueSytem in this manner failed:
+Original attempt was to fit ALL game dialogues for EACH character into a single XML file. Essentially every NPC would have the DialogueSystem file attached to them, and I had
+planned on looping through the dialogues and only displaying the ones related to the character that collided. Unfortunatley, this attempt did not work, as no matter how I coded it 
+the improper dialogue would play for nearly every character. This just didnt make sense to persue anymore. See Updated DialogueManager.cs, DialogueTrigger.cs to see how I changed my approach.
+
+
