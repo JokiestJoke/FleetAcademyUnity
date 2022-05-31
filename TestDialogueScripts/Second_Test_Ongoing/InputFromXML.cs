@@ -16,7 +16,9 @@ using TMPro;
 public interface InputFromXML
 {
 
-    public int calculateNumberOfCoreNodes(TextAsset xmlTextAsset);
 
-    public InputFromXML readFile(TextAsset xmlTextAsset);
+    public List<XmlData> readXml(TextAsset xmlTextAsset);
+
+
+    //public XmlData[] readFile(TextAsset xmlTextAsset); // gonna try a List instead.
 }

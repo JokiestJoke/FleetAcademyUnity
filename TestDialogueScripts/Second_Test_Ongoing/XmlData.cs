@@ -4,5 +4,7 @@ using UnityEngine;
 
 public abstract class XmlData
 {
-    
+    public string name;
+    public string content;
+       
 }
