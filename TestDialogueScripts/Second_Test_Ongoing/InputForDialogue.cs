@@ -40,6 +40,7 @@ public class InputForDialogue : InputFromXML
        foreach(XmlNode dialogueFromXML in xmlDocument.SelectNodes("dialogues/character/dialogue")){ // we loop through the dialogue node that is a child of character
             TestDialogue dialogue = new TestDialogue();
             choiceIndex = 0;
+            
             //need someway to take in the name..... other than this test.
             dialogue.name = "TestDialogue ID: " + testDialogueID;
             dialogue.content = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
