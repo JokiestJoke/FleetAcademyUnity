@@ -16,9 +16,6 @@ public class InputForDialogue : InputFromXML
     private int choiceIndex = 0; //initialize current dialogueIndex at 0
 
     public List<XmlData> readXml(TextAsset xmlTextAsset){ // needs to be a list?
-        //XmlData dialogue = new TestDialogue();
-        //numberOfDialogues = calculateNumberOfCoreNodes(xmlTextAsset);
-        //dialogues = new TestDialogue[numberOfDialogues];
         dialogues = new List<XmlData>();
         assembleDialoguesFromXml(xmlTextAsset);
         return dialogues;
