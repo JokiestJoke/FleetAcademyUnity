@@ -28,8 +28,7 @@ public class DialogueManager : MonoBehaviour
 {
     private string characterName; // declaring a string containing the characters name
     private Dialogue[] dialogues; //declaring an Array for Dialogue objects called dialogues
-    private int numberOfDialogues; 
-    private int numberOfResponses;
+    private int numberOfDialogues; // number of dialogues
     private int currentDialogueIndex; // declaring an initial index of 0;
     
     private bool holdForResponse; // delclaring a bool which holds for a players response to dialogue choices
