@@ -20,7 +20,7 @@ public class TestDialogueManager : MonoBehaviour
     private InputFromXML input;
     private InputFactory inputFactory;
 
-    /*
+    
     [Header("Dialogue UI")]
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
@@ -29,10 +29,11 @@ public class TestDialogueManager : MonoBehaviour
     [Header("Choices UI")]
     [SerializeField] private GameObject[] choiceButtons; // choices that will correspond to the Buttons in unity
     private TextMeshProUGUI[] choicesText;
-    */
-
+    
+    /*
     [Header("XML Document")] // testing purposes
     [SerializeField] private TextAsset xmlDocumentTextAsset;
+    */
 
     private StringAssembler stringAssembler; //declaring a NameAssembler object to stringify names by delimiters
 
@@ -53,7 +54,7 @@ public class TestDialogueManager : MonoBehaviour
     void Start()
     {
         
-        stringAssembler = new StringAssembler(); // initializing a new name assembler
+        //stringAssembler = new StringAssembler(); // initializing a new name assembler
 
         currentDialogueIndex = 0; //initialize current dialogueIndex at 0
 
@@ -62,22 +63,93 @@ public class TestDialogueManager : MonoBehaviour
         //Attempting to get the Input factory working. Lots of the logic is purely just a test.
         inputFactory = new InputFactory();
         input = inputFactory.create("Dialogue"); //Will need a helper function to work with create, but for now this works.
-        dialogues = input.readXml(xmlDocumentTextAsset);
 
-        displayDialogue(dialogues);
-        
-        //dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
-        //choicesText = new TextMeshProUGUI[choiceButtons.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
-        //setupButtonsAtStart(); // call helper function to set up buttons at start of the frame.
+        dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
+        choicesText = new TextMeshProUGUI[choiceButtons.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
+        setupButtonsAtStart(); // call helper function to set up buttons at start of the frame.
     }
 
     // Update is called once per frame
     void Update()
     {
-        //manageDialogue();
+        manageDialogue();
     }
 
-     private void displayDialogue(List<XmlData> dialogues){
+    private void setupButtonsAtStart(){ //helper function to setup the buttons with the TextMeshPROGUI components attached to them. essential for displaying text.
+        int choiceIndex = 0;
+        foreach(GameObject choice in choiceButtons){
+            choicesText[choiceIndex] = choice.GetComponentInChildren<TextMeshProUGUI>();
+            choiceIndex++;
+        }
+    }
+
+    private void manageDialogue(){
+        if (isDialogueActive){
+            if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
+                dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
+                if (currentDialogueIndex != -1){// and the dialogue is NOT finished (which -1 would indicate in the XML file under target)
+                    displayDialogue(); // then we display dialogue
+                    displayResponsesToButtons(); 
+                } 
+                else { //if the dialogue is -1 then we must end the dialogue
+                    endDialogue();
+                }
+                holdForResponse = true; //we then wait for user input 
+            }
+        }
+    }
+
+    public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
+        holdForResponse = false;// we start the dialogue so we do not hold
+        isDialogueActive = true;// we state there is active dialogue
+        characterName = npcName;// get the NPC name from the collision
+        dialogues = input.readXml(xmlTextAsset); //Call read
+
+    }
+
+    private void endDialogue(){
+        isDialogueActive = false; //We set isDialogueActive to false as the id for the next target equals -1
+        dialoguePanel.SetActive(false); // if the dialogue is over we set the dialoguePanel to inactive
+        holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
+        currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
+        dialogueText.text = "";
+    }
+
+    private void displayDialogue(){ // Helper function that displays the message of the current dialogue
+
+        string dialogueTextToDisplay = "[" + dialogues[currentDialogueIndex].name + "]" + " " + dialogues[currentDialogueIndex].content;
+        dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created        
+    
+    }
+
+    private void displayResponsesToButtons(){ // for every Response of the currentDialogueIndex we set the text of the button to the response of the Dialogue.response array.
+        int index = 0;
+        TestDialogue currentDialogue = (TestDialogue) dialogues[currentDialogueIndex]; // set the current Dialogue and cast it explicitly into a TestDialogue Object
+        foreach(string response in currentDialogue.response){
+            Debug.Log("Response: " + response);
+            choiceButtons[index].gameObject.SetActive(true); // activating the buttons to show. By default at game start they are invisible.
+            choicesText[index].text = response; // assign the button.text the response(s) of the current dialogue.
+            index++;
+        }
+        deactivateIdleButtons(index); // call helper function to deactivate    
+    }
+
+    private void deactivateIdleButtons(int indexOfLastActiveButton){ //not all dialogues with have the max options. this function will hide the buttons w/o a corresponding response
+        int index;
+        for(index = indexOfLastActiveButton; index < choiceButtons.Length; index++){
+            choiceButtons[index].gameObject.SetActive(false); // set false and idle buttons.
+        }
+    }
+
+    //this method will be used on the buttons OnClick Function. This will not be called in this file, rather only defined.
+    //For future refrence see that the gameObject choiceButtons have DialogueManager.makeResponseChoice() called when the specific buttons is pressed!
+    public void makeResponseChoice(int targetForResponseIndex){
+        TestDialogue currentDialogue = (TestDialogue) dialogues[currentDialogueIndex]; //define the current Dialogue from the dialogues List
+        currentDialogueIndex = currentDialogue.targetForResponse[targetForResponseIndex]; //define the currentDialogueIndex based off the targetForResponseIndex
+        holdForResponse = false;
+    }
+
+    private void displayDialogueTest(List<XmlData> dialogues){ /// testing purposes
         int dialogueObjects = 0;
         foreach(TestDialogue dialogue in dialogues){
             Debug.Log("------------------------------------");
@@ -87,17 +159,8 @@ public class TestDialogueManager : MonoBehaviour
             Debug.Log("Response 2: " + dialogue.response[1]);
             Debug.Log("Response 3: " + dialogue.response[2]);
             Debug.Log("------------------------------------");
-
-
             dialogueObjects++;
         }
-        Debug.Log("The total number of Dialogue Objects are: " + dialogueObjects);
-        /*
-        string dialogueToDisplay = "[" + dialogues[currentDialogueIndex].characterName + "]" + " " + dialogues[currentDialogueIndex].message + "\n [A]> " + dialogues[currentDialogueIndex].response[0] + "\n [B]> " + dialogues[currentDialogueIndex].response[1];
-        GameObject.Find("dialogueBox").GetComponent<Text>().text = dialogueToDisplay;
-        */
+        Debug.Log("The total number of Dialogue Objects are: " + dialogueObjects);  
     }
-
-
-
 }
