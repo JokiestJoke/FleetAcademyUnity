@@ -13,7 +13,8 @@ public class DialogueManager : MonoBehaviour
 
     private int currentDialogueIndex;
 
-    private string characterName;
+    private string speaker;
+    private string dataType;
 
     private List<XmlData> dialogues;
 
@@ -30,11 +31,6 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject[] choiceButtons; // choices that will correspond to the Buttons in unity
     private TextMeshProUGUI[] choicesText;
     
-    /*
-    [Header("XML Document")] // testing purposes
-    [SerializeField] private TextAsset xmlDocumentTextAsset;
-    */
-
     private StringAssembler stringAssembler; //declaring a NameAssembler object to stringify names by delimiters
 
     private static DialogueManager instance; // declare instance so we can create a singleton.
@@ -54,15 +50,14 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         
-        //stringAssembler = new StringAssembler(); // initializing a new name assembler
-
+        stringAssembler = new StringAssembler(); // initializing a new string assembler to convert gameObject names to a clean string
+        dataType = "Dialogue";
         currentDialogueIndex = 0; //initialize current dialogueIndex at 0
-
         isDialogueActive = false; // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         holdForResponse = false; // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
         //Attempting to get the Input factory working. Lots of the logic is purely just a test.
         inputFactory = new InputFactory();
-        input = inputFactory.create("Dialogue"); //Will need a helper function to work with create, but for now this works.
+        input = inputFactory.create(dataType); //Will need a helper function to work with create, but for now this works.
 
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
         choicesText = new TextMeshProUGUI[choiceButtons.Length]; //initializing a TextMesh array for the response text. same length as the array holding the GameObject buttons
@@ -102,9 +97,8 @@ public class DialogueManager : MonoBehaviour
     public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
         holdForResponse = false;// we start the dialogue so we do not hold
         isDialogueActive = true;// we state there is active dialogue
-        characterName = npcName;// get the NPC name from the collision
+        speaker = stringAssembler.assembleString(npcName);
         dialogues = input.readXml(xmlTextAsset); //Call read
-
     }
 
     private void endDialogue(){
@@ -116,17 +110,19 @@ public class DialogueManager : MonoBehaviour
     }
 
     private void displayDialogue(){ // Helper function that displays the message of the current dialogue
-
-        string dialogueTextToDisplay = "[" + dialogues[currentDialogueIndex].name + "]" + " " + dialogues[currentDialogueIndex].content;
-        dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created        
-    
+        Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex];
+        if (speaker == currentDialogue.name){
+            string dialogueTextToDisplay = "[" + currentDialogue.name + "]" + " " + currentDialogue.content;
+            dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created        
+        } else {
+            throw new InvalidSpeakerException(speaker);
+        }
     }
 
     private void displayResponsesToButtons(){ // for every Response of the currentDialogueIndex we set the text of the button to the response of the Dialogue.response array.
         int index = 0;
         Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex]; // set the current Dialogue and cast it explicitly into a TestDialogue Object
         foreach(string response in currentDialogue.response){
-            Debug.Log("Response: " + response);
             choiceButtons[index].gameObject.SetActive(true); // activating the buttons to show. By default at game start they are invisible.
             choicesText[index].text = response; // assign the button.text the response(s) of the current dialogue.
             index++;
@@ -147,20 +143,5 @@ public class DialogueManager : MonoBehaviour
         Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex]; //define the current Dialogue from the dialogues List
         currentDialogueIndex = currentDialogue.targetForResponse[targetForResponseIndex]; //define the currentDialogueIndex based off the targetForResponseIndex
         holdForResponse = false;
-    }
-
-    private void displayDialogueTest(List<XmlData> dialogues){ /// testing purposes
-        int dialogueObjects = 0;
-        foreach(Dialogue dialogue in dialogues){
-            Debug.Log("------------------------------------");
-            Debug.Log("Dialogue Name: " + dialogue.name);
-            Debug.Log("Dialogue Content: " + dialogue.content);
-            Debug.Log("Response 1: " + dialogue.response[0]);
-            Debug.Log("Response 2: " + dialogue.response[1]);
-            Debug.Log("Response 3: " + dialogue.response[2]);
-            Debug.Log("------------------------------------");
-            dialogueObjects++;
-        }
-        Debug.Log("The total number of Dialogue Objects are: " + dialogueObjects);  
     }
 }

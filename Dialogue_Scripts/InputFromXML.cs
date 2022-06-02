@@ -19,6 +19,4 @@ public interface InputFromXML
 
     public List<XmlData> readXml(TextAsset xmlTextAsset);
 
-
-    //public XmlData[] readFile(TextAsset xmlTextAsset); // gonna try a List instead.
 }

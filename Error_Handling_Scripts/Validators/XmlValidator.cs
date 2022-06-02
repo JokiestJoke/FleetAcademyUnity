@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface XmlValidator
 {
-    public void validate(XmlData data, GameObject gameObject);
+    public void validate(XmlData data);
 }
