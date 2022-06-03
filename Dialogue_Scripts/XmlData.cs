@@ -6,6 +6,6 @@ public abstract class XmlData
 {
     public string name;
     public string content;
-    public string dataType;
-    public int id;  
+    public int id;
+
 }

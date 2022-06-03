@@ -7,11 +7,8 @@ using TMPro;
 
 public class InputForDialogue : InputFromXML
 {
-
     private StringAssembler stringAssembler = new StringAssembler();
-    
     private string characterName; // declaring a string containing the characters name
-    private string dataType; // we will use this "Type" to tell our Input Factory to create
     private List<XmlData> dialogues; //declaring an Array for Dialogue objects called dialogues
     private int dialogueIndex = 0; //initialize current dialogueIndex at 0
     private int choiceIndex = 0; //initialize current dialogueIndex at 0
@@ -30,7 +27,6 @@ public class InputForDialogue : InputFromXML
         foreach(XmlNode character in xmlDocument.SelectNodes("dialogues/character")){ //We loop through each node called character under the parent node dialogues.
             dialogueIndex = 0; //making sure the dialogueIndex is set to 0
             characterName = character.Attributes.GetNamedItem("name").Value;
-            //dataType = character.Attributes.GetNamedItem("dataType").ToUpper();
             loadNodes(xmlDocument); // calling a helper function
         }
     }
@@ -43,7 +39,6 @@ public class InputForDialogue : InputFromXML
             
             //populate the dialogue Object with the proper fields
             dialogue.id = dialogueID; //assign an ID to the current Dialogue object
-            dialogue.dataType = dataType.Trim(); //define the type of data and make sure no whitespace came through
             dialogue.name = characterName; // assign the name of the current speaker of the Dialogue Object
             dialogue.content = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
             dialogue.response = new string[3]; //define the size of the response array for this Dialogue Object

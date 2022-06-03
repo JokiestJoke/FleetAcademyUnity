@@ -49,14 +49,15 @@ public class DialogueManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
         stringAssembler = new StringAssembler(); // initializing a new string assembler to convert gameObject names to a clean string
-        dataType = "Dialogue";
+        
+        dataType = "Dialogue"; //<--- the DialogueManager Shoudlnt be deciding this....Mark you need to revist this...
+        
         currentDialogueIndex = 0; //initialize current dialogueIndex at 0
         isDialogueActive = false; // declaring the diaologuePanel variable to the GameObject dialogueBox which is a UI element in the unity Heirarchy
         holdForResponse = false; // declaring the diaologuePanel variable to the GameObject dialoguePanel which is a UI element in the unity Heirarchy
-        //Attempting to get the Input factory working. Lots of the logic is purely just a test.
-        inputFactory = new InputFactory();
+        
+        inputFactory = new InputFactory();// initialize the InputFactory
         input = inputFactory.create(dataType); //Will need a helper function to work with create, but for now this works.
 
         dialoguePanel.SetActive(false); // make sure the dialogue panel is not set to active
@@ -136,7 +137,6 @@ public class DialogueManager : MonoBehaviour
             choiceButtons[index].gameObject.SetActive(false); // set false and idle buttons.
         }
     }
-
     //this method will be used on the buttons OnClick Function. This will not be called in this file, rather only defined.
     //For future refrence see that the gameObject choiceButtons have DialogueManager.makeResponseChoice() called when the specific buttons is pressed!
     public void makeResponseChoice(int targetForResponseIndex){
