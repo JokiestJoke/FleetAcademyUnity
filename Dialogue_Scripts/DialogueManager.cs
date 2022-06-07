@@ -13,7 +13,7 @@ public class DialogueManager : MonoBehaviour
 
     private int currentDialogueIndex;
 
-    private string speaker;
+    private string npcSpeaker;
     private string dataType;
 
     private List<XmlData> dialogues;
@@ -29,9 +29,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private TextMeshProUGUI speakerNameText;
     [SerializeField] private Animator portraitAnimator;
-    //[SerializeField] private RawImage dialogueImage;
-
-
+    
     [Header("Choices UI")]
     [SerializeField] private GameObject[] choiceButtons; // choices that will correspond to the Buttons in unity
     private TextMeshProUGUI[] choicesText;
@@ -104,8 +102,8 @@ public class DialogueManager : MonoBehaviour
         holdForResponse = false;// we start the dialogue so we do not hold
         isDialogueActive = true;// we state there is active dialogue
         dialoguePanel.SetActive(true); //set the dialoguePanel to active
-        portraitAnimator.Play("default");
-        speaker = stringAssembler.assembleString(npcName);
+        portraitAnimator.Play("default"); // set the portrait to default to start with
+        npcSpeaker = stringAssembler.assembleString(npcName);
         dialogues = input.readXml(xmlTextAsset); //Call read
     }
 
@@ -120,17 +118,15 @@ public class DialogueManager : MonoBehaviour
 
     private void displayDialogue(){ // Helper function that displays the message of the current dialogue
         Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex];
-        string speaker = currentDialogue.name;
-
-        //dialogueImage.GetComponent<RawImage>().texture = Resources.Load<Texture2D>(gameObject.name) as Texture2D;
-
-        if (speaker == currentDialogue.name){
+        if (npcSpeaker == currentDialogue.name){
             string dialogueTextToDisplay = "'" + currentDialogue.content + "'" ;
             dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
-            speakerNameText.text = speaker;     
+            speakerNameText.text = npcSpeaker;
+            manageSpeakerPanel(currentDialogue);     
         } else {
-            throw new InvalidSpeakerException(speaker);
+            throw new InvalidSpeakerException(npcSpeaker);
         }
+        //Debug.Log("Target Mood: " + currentDialogue.targetDialogueMood);
     }
 
     private void displayResponsesToButtons(){ // for every Response of the currentDialogueIndex we set the text of the button to the response of the Dialogue.response array.
@@ -151,8 +147,11 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void handleSpeakerPanel(Dialogue currentDialogue){
-
+    private void manageSpeakerPanel(Dialogue dialogue){
+        Dialogue currentDialogue = dialogue; //create a current dialogue
+        
+        portraitAnimator.Play(currentDialogue.targetDialogueMood);
+        
     }
     //this method will be used on the buttons OnClick Function. This will not be called in this file, rather only defined.
     //For future refrence see that the gameObject choiceButtons have DialogueManager.makeResponseChoice() called when the specific buttons is pressed!

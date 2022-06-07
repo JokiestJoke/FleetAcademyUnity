@@ -32,13 +32,14 @@ public class InputForDialogue : InputFromXML
     }
 
     private void loadNodes(XmlDocument xmlDocument){
-        int dialogueID = 0;
+        //int dialogueID = 0;
        foreach(XmlNode dialogueFromXML in xmlDocument.SelectNodes("dialogues/character/dialogue")){ // we loop through the dialogue node that is a child of character
             Dialogue dialogue = new Dialogue();
             choiceIndex = 0;
             
             //populate the dialogue Object with the proper fields
-            dialogue.id = dialogueID; //assign an ID to the current Dialogue object
+            //dialogue.id = dialogueID; //assign an ID to the current Dialogue object
+            dialogue.id = int.Parse(dialogueFromXML.Attributes.GetNamedItem("id").Value);
             dialogue.name = characterName; // assign the name of the current speaker of the Dialogue Object
             dialogue.content = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
             dialogue.response = new string[3]; //define the size of the response array for this Dialogue Object
@@ -52,7 +53,7 @@ public class InputForDialogue : InputFromXML
             }
             dialogues.Add(dialogue);
             dialogueIndex++; // increment dialogueIndex everytime a Dialogue Object is created
-            dialogueID++;
+            //dialogueID++;
         }
     }    
 }
