@@ -7,7 +7,7 @@ using TMPro;
 
 public class InputForDialogue : InputFromXML
 {
-    private StringAssembler stringAssembler = new StringAssembler();
+    
     private string characterName; // declaring a string containing the characters name
     private List<XmlData> dialogues; //declaring an Array for Dialogue objects called dialogues
     private int dialogueIndex = 0; //initialize current dialogueIndex at 0
@@ -43,6 +43,7 @@ public class InputForDialogue : InputFromXML
             dialogue.content = dialogueFromXML.Attributes.GetNamedItem("content").Value; //assign message attribute of the Dialogue object to the content of this dialogue node
             dialogue.response = new string[3]; //define the size of the response array for this Dialogue Object
             dialogue.targetForResponse = new int[3];//define the size of the targetForResponse array for this Dialogue Object
+            dialogue.targetDialogueMood = dialogueFromXML.Attributes.GetNamedItem("mood").Value;
             
             foreach(XmlNode choice in dialogueFromXML){ //loop through each choice node that is a child of the corresponding dialogue node
                 dialogue.response[choiceIndex] = choice.Attributes.GetNamedItem("content").Value;//assign the response attribute of the Dialogue object to the choice's content

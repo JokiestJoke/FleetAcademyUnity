@@ -21,11 +21,16 @@ public class DialogueManager : MonoBehaviour
     private InputFromXML input;
     private InputFactory inputFactory;
 
-    
+    //private const string SPEAKER_TAG = "speaker";
+    private const string PORTRAIT_TAG = "portrait";
+
     [Header("Dialogue UI")]
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
-    //[SerializeField] private TextMeshProUGUI displayNameText;
+    [SerializeField] private TextMeshProUGUI speakerNameText;
+    [SerializeField] private Animator portraitAnimator;
+    //[SerializeField] private RawImage dialogueImage;
+
 
     [Header("Choices UI")]
     [SerializeField] private GameObject[] choiceButtons; // choices that will correspond to the Buttons in unity
@@ -98,6 +103,8 @@ public class DialogueManager : MonoBehaviour
     public void startDialogue(TextAsset xmlTextAsset, string npcName){ // helper function that makes sure our dialogues start properly.
         holdForResponse = false;// we start the dialogue so we do not hold
         isDialogueActive = true;// we state there is active dialogue
+        dialoguePanel.SetActive(true); //set the dialoguePanel to active
+        portraitAnimator.Play("default");
         speaker = stringAssembler.assembleString(npcName);
         dialogues = input.readXml(xmlTextAsset); //Call read
     }
@@ -108,13 +115,19 @@ public class DialogueManager : MonoBehaviour
         holdForResponse = false; //We set holdForResponse to false as we do not need to wait for the user to respond if the dialogue is over
         currentDialogueIndex = 0; // Reset the currentDialogueIndex to 0 as we do not want any ids to carry over to further dialogues
         dialogueText.text = "";
+        speakerNameText.text = "";
     }
 
     private void displayDialogue(){ // Helper function that displays the message of the current dialogue
         Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex];
+        string speaker = currentDialogue.name;
+
+        //dialogueImage.GetComponent<RawImage>().texture = Resources.Load<Texture2D>(gameObject.name) as Texture2D;
+
         if (speaker == currentDialogue.name){
-            string dialogueTextToDisplay = "[" + currentDialogue.name + "]" + " " + currentDialogue.content;
-            dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created        
+            string dialogueTextToDisplay = "'" + currentDialogue.content + "'" ;
+            dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
+            speakerNameText.text = speaker;     
         } else {
             throw new InvalidSpeakerException(speaker);
         }
@@ -136,6 +149,10 @@ public class DialogueManager : MonoBehaviour
         for(index = indexOfLastActiveButton; index < choiceButtons.Length; index++){
             choiceButtons[index].gameObject.SetActive(false); // set false and idle buttons.
         }
+    }
+
+    private void handleSpeakerPanel(Dialogue currentDialogue){
+
     }
     //this method will be used on the buttons OnClick Function. This will not be called in this file, rather only defined.
     //For future refrence see that the gameObject choiceButtons have DialogueManager.makeResponseChoice() called when the specific buttons is pressed!
