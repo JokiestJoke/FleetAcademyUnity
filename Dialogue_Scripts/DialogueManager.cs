@@ -36,9 +36,9 @@ public class DialogueManager : MonoBehaviour
     
     private StringAssembler stringAssembler; //declaring a NameAssembler object to stringify names by delimiters
 
-    private TypeWritterEffect typeWritterEffect;
+    private TypeWriterEffect typeWriterEffect;
 
-    private Coroutine typeWritterCoroutine;
+    private Coroutine typeWriterCoroutine;
 
     private static DialogueManager instance; // declare instance so we can create a singleton.
 
@@ -57,7 +57,7 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         stringAssembler = new StringAssembler(); // initializing a new string assembler to convert gameObject names to a clean string
-        typeWritterEffect = new TypeWritterEffect();
+        typeWriterEffect = new TypeWriterEffect();
         
         dataType = "Dialogue"; //<--- the DialogueManager Shoudlnt be deciding this....Mark you need to revist this...
         
@@ -124,8 +124,10 @@ public class DialogueManager : MonoBehaviour
         Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex];
         if (npcSpeaker == currentDialogue.name){
             string dialogueTextToDisplay = "'" + currentDialogue.content + "'" ;
-            typeWritterCoroutine = StartCoroutine(typeWritterEffect.typeLine(dialogueTextToDisplay, dialogueText));
-            //dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
+            if (typeWriterCoroutine != null){
+                StopCoroutine(typeWriterCoroutine);
+            }
+            typeWriterCoroutine = StartCoroutine(typeWriterEffect.typeLine(dialogueTextToDisplay, dialogueText));
             manageSpeakerPanel(currentDialogue);     
         } else {
             throw new InvalidSpeakerException(npcSpeaker);
