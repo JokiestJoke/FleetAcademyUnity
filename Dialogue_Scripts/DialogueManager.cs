@@ -36,6 +36,10 @@ public class DialogueManager : MonoBehaviour
     
     private StringAssembler stringAssembler; //declaring a NameAssembler object to stringify names by delimiters
 
+    private TypeWritterEffect typeWritterEffect;
+
+    private Coroutine typeWritterCoroutine;
+
     private static DialogueManager instance; // declare instance so we can create a singleton.
 
     public static DialogueManager getInstance(){ //basic getInstance singleton we will refer to in our trigger.
@@ -53,6 +57,7 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         stringAssembler = new StringAssembler(); // initializing a new string assembler to convert gameObject names to a clean string
+        typeWritterEffect = new TypeWritterEffect();
         
         dataType = "Dialogue"; //<--- the DialogueManager Shoudlnt be deciding this....Mark you need to revist this...
         
@@ -85,7 +90,6 @@ public class DialogueManager : MonoBehaviour
     private void manageDialogue(){
         if (isDialogueActive){
             if (!holdForResponse){ //if we are waiting for a repsonse - remeber that holdForResponse is by default initiliazed as false
-                dialoguePanel.SetActive(true); // if dialogue is active and we are waiting for a response we set the dialoguePanel to active
                 if (currentDialogueIndex != -1){// and the dialogue is NOT finished (which -1 would indicate in the XML file under target)
                     displayDialogue(); // then we display dialogue
                     displayResponsesToButtons(); 
@@ -120,8 +124,8 @@ public class DialogueManager : MonoBehaviour
         Dialogue currentDialogue = (Dialogue) dialogues[currentDialogueIndex];
         if (npcSpeaker == currentDialogue.name){
             string dialogueTextToDisplay = "'" + currentDialogue.content + "'" ;
-            dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
-            speakerNameText.text = npcSpeaker;
+            typeWritterCoroutine = StartCoroutine(typeWritterEffect.typeLine(dialogueTextToDisplay, dialogueText));
+            //dialogueText.text = dialogueTextToDisplay; // the message of the Dialogues's message at the currentDialogueIndex is set to the string that was just created
             manageSpeakerPanel(currentDialogue);     
         } else {
             throw new InvalidSpeakerException(npcSpeaker);
@@ -149,9 +153,8 @@ public class DialogueManager : MonoBehaviour
 
     private void manageSpeakerPanel(Dialogue dialogue){
         Dialogue currentDialogue = dialogue; //create a current dialogue
-        
-        portraitAnimator.Play(currentDialogue.targetDialogueMood);
-        
+        speakerNameText.text = currentDialogue.name; //set the current name of the NPC for the SpeakerPanel
+        portraitAnimator.Play(currentDialogue.targetDialogueMood); // play the current mood for the Dialogue.    
     }
     //this method will be used on the buttons OnClick Function. This will not be called in this file, rather only defined.
     //For future refrence see that the gameObject choiceButtons have DialogueManager.makeResponseChoice() called when the specific buttons is pressed!
