@@ -22,7 +22,20 @@ public class PlayerMovement : MonoBehaviour
 
     private GUIManager GUIManager;
 
-    private float lastVerticalInput;
+    public float lastVerticalInput;
+
+    private static PlayerMovement instance; // declare instance so we can create a singleton.
+
+    public static PlayerMovement getInstance(){ //basic getInstance singleton we will refer to in our trigger.
+        return instance;
+    }
+
+    private void Awake(){  // all thats needed in this awake is to error check to make sure there is not more than 1 instance of 
+        if (instance != null){
+            Debug.LogWarning("Warning: PlayerMovement Singleton -> More than 1 instance!");
+        }
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -77,28 +90,32 @@ public class PlayerMovement : MonoBehaviour
         }  
     }
 
+    /*
     private void animationHandler(float horizontalAxis, float verticalAxis, Animator animator) {
         if (verticalAxis == 0) {
             playerAnimator.playAnimation(animator, "default_toward");
-            Debug.Log("Default Animation Playing!");
-        } else if (verticalAxis == 1) {
+            //Debug.Log("Default Animation Playing!");
+        } else if (verticalAxis > 0) {
             playerAnimator.playAnimation(animator, "player_run_away");
-            Debug.Log("Running Away Animation Playing!");
-        } else if(verticalAxis == -1) {
+            //Debug.Log("Running Away Animation Playing!");
+        } else if(verticalAxis < 0) {
             playerAnimator.playAnimation(animator, "player_run_toward");
-            Debug.Log("Running Towards animation playing!");
+            //Debug.Log("Running Towards animation playing!");
         } else {
             Debug.Log("Animation Error: No animation for the control specified!");
         }
     }
+    */
     
     private void playerMoveHandler() {
         //WASD input
-        float horizontal = Input.GetAxis("Horizontal");
+        float horizontal = Input.GetAxis("Horizontal"); 
         float vertical = Input.GetAxis("Vertical");
         lastVerticalInput = vertical;
+
+        playerAnimator.playAnimation(animator);
+        //animationHandler(horizontal, vertical, animator);
         
-        animationHandler(horizontal, vertical, animator);
         // moving character with WASD input
         Vector3 movement = transform.forward * vertical + transform.right * horizontal;
         characterController.Move(movement * Time.deltaTime * speed);
@@ -124,10 +141,6 @@ public class PlayerMovement : MonoBehaviour
     private void rotateXAxis(float mouseX) {
         //rotate the player based on the X input of the mouse.
         transform.Rotate(Vector3.up * mouseX * 3);
-    }
-
-    public float getVerticalInput(){ // function will return the final keyboard input between -1, 1;
-        return lastVerticalInput;
     }
 
 }

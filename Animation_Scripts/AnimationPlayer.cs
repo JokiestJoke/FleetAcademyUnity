@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface AnimationPlayer 
 {
-    public void playAnimation(Animator animator, string animationName);
+    public void playAnimation(Animator animator);
 }
