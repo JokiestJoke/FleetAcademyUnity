@@ -12,47 +12,23 @@ public class PlayerAnimator : AnimationPlayer
 
     private float verticalInput;
     
-    /*
-    public void playAnimation(Animator animator, string animationName){
-        Animator playerAnimator = animator;
-
-        checkSingleton();
-        //Debug.Log("Player Vertical Input: " + vertical);
-        if (animationName == PLAYER_IDLE_ONE) {
-            playerAnimator.Play(PLAYER_IDLE_ONE);
-        } else if (animationName == RUN_TOWARD) {
-            playerAnimator.Play(RUN_TOWARD);
-        } else if (animationName == RUN_AWAY) {
-            playerAnimator.Play(RUN_AWAY);
-        } else if (animationName == DEFAULT_TOWARD) {
-            playerAnimator.Play(DEFAULT_TOWARD);
-        } else if (animationName == DEFAULT_AWAY){
-            playerAnimator.Play(DEFAULT_AWAY);
-        } else {
-            Debug.Log("Animation not found! Error!");
-        }
-    }
-    */
-
     public void playAnimation(Animator animator){
         Animator playerAnimator = animator;
-
         verticalInput = PlayerMovement.getInstance().lastVerticalInput;
         Debug.Log("Vertical Input: " + verticalInput);
+        playMovementAnimation(playerAnimator, verticalInput);
+    }
+
+    private void playMovementAnimation(Animator animator, float verticalInput){
         if (verticalInput == 0){
-            playerAnimator.Play(DEFAULT_TOWARD);
+            animator.Play(DEFAULT_TOWARD);
         } else if (verticalInput > 0){
-            playerAnimator.Play(RUN_AWAY);
+            animator.Play(RUN_AWAY);
         } else if (verticalInput < 0){
-            playerAnimator.Play(RUN_TOWARD);
+            animator.Play(RUN_TOWARD);
         } else {
             Debug.Log("Error Animation not found for current vertical input!");
         }
     }
 
-    private IEnumerator playDefault(Animator animator, string animationName){
-        yield return new WaitForSeconds(5);
-        animator.Play(animationName);
-    }
-    
 }

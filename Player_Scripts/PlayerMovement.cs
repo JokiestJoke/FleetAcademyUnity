@@ -89,23 +89,6 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(playerVelocity * Time.deltaTime);
         }  
     }
-
-    /*
-    private void animationHandler(float horizontalAxis, float verticalAxis, Animator animator) {
-        if (verticalAxis == 0) {
-            playerAnimator.playAnimation(animator, "default_toward");
-            //Debug.Log("Default Animation Playing!");
-        } else if (verticalAxis > 0) {
-            playerAnimator.playAnimation(animator, "player_run_away");
-            //Debug.Log("Running Away Animation Playing!");
-        } else if(verticalAxis < 0) {
-            playerAnimator.playAnimation(animator, "player_run_toward");
-            //Debug.Log("Running Towards animation playing!");
-        } else {
-            Debug.Log("Animation Error: No animation for the control specified!");
-        }
-    }
-    */
     
     private void playerMoveHandler() {
         //WASD input
@@ -114,7 +97,6 @@ public class PlayerMovement : MonoBehaviour
         lastVerticalInput = vertical;
 
         playerAnimator.playAnimation(animator);
-        //animationHandler(horizontal, vertical, animator);
         
         // moving character with WASD input
         Vector3 movement = transform.forward * vertical + transform.right * horizontal;
