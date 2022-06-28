@@ -6,28 +6,30 @@ public class PlayerAnimator : AnimationPlayer
 {
     private const string DEFAULT_TOWARD = "default_toward";
     private const string DEFAULT_AWAY = "default_away";
-    private const string PLAYER_IDLE_ONE = "player_idle_1";
+    private const string PLAYER_IDLE_ONE = "player_idle_towards_one";
+    private const string PLAYER_IDLE_TWO = "player_idle_towards_two";
     private const string RUN_TOWARD = "player_run_toward";
     private const string RUN_AWAY = "player_run_away";
-    
-   
-    //Random randomNumber = new System.Random();
-    private int randomNumber;
 
+    //Random randomNumber = new System.Random();
+    //private int randomIdleIndex = Random.Range(0, 2);
     private float verticalInput;
     private int timer;
     private bool isIdle;
     
     public void playAnimation(Animator animator){
         Animator playerAnimator = animator;
+        //randomIdleIndex = Random.Range(0, 2);
+
         verticalInput = PlayerMovement.getInstance().lastVerticalInput;
         isIdle = PlayerMovement.getInstance().isIdle;
-        //Debug.Log("Vertical Input: " + verticalInput);
-        playMovementAnimation(playerAnimator, verticalInput);
-        
-        if (isIdle){
-            playIdleAnimation(animator);
+
+        if (isIdle == true) {
+            playIdleAnimation(animator, 1);
+        } else {
+            playMovementAnimation(playerAnimator, verticalInput);
         }
+
     }
 
     private void playMovementAnimation(Animator animator, float verticalInput){
@@ -42,27 +44,17 @@ public class PlayerAnimator : AnimationPlayer
         }
     }
 
-    
-    private IEnumerator generateRandomeNumber(){
-        yield return new WaitForSeconds(10);
-        randomNumber = Random.Range(0, 2);
-    }
-
-
-
-    
-    private void playIdleAnimation(Animator animator){
-        animator.Play(PLAYER_IDLE_ONE);
+    private void playIdleAnimation(Animator animator, int idleIndex){
         //int randomNumber = Random.Range(0, 2);
-        /*
-        if (randomNumber == 0){
-            Debug.Log("0");
-        } else if (randomNumber == 1){
-            Debug.Log("1");
+        if (idleIndex == 0){
+            animator.Play(PLAYER_IDLE_ONE);
+            Debug.Log("Player Idle One Playing");
+        } else if (idleIndex == 1){
+            animator.Play(PLAYER_IDLE_TWO);
+            Debug.Log("Player Idle Two Playing");
         } else {
             Debug.Log("Animation Not found!");
         }
-        */
     }
     
 
