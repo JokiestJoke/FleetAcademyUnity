@@ -9,7 +9,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float minFOV; // factor which we use to manipulate zoom with Time.timedelta
     [SerializeField] private float maxFOV; // The desired speed we use in Mathf.lerp
     [SerializeField] private float mouseSensitivity; 
-    
+
+    [Header("Player Idle UI")]
+    [SerializeField] private float idleTime; // create a speed for Player
+    private float timer = 0.0f;
+    public bool isIdle = false;
+
     private float spriteAxisRotationY = 0f; // this is for the sprite rotation it should start at 0f.
     private Animator animator;
     private PlayerAnimator playerAnimator;
@@ -80,6 +85,8 @@ public class PlayerMovement : MonoBehaviour
         rotateXAxis(mouseX);
     }
     private void FixedUpdate() {
+        checkIfIdle();
+
        //detect if player is grounded
         if (characterController.isGrounded){
             playerVelocity.y = 0f;
@@ -88,6 +95,21 @@ public class PlayerMovement : MonoBehaviour
         playerVelocity.y += -9.18F * Time.deltaTime;
         characterController.Move(playerVelocity * Time.deltaTime);
         }  
+    }
+
+    private void checkIfIdle(){
+        if (!Input.anyKey){
+            timer += Time.deltaTime;
+            Debug.Log("Idle Timer: " + timer);
+            if (timer >= idleTime){
+                Debug.Log("Idle State Active at: " + timer);
+                isIdle = true;
+            }
+        } else {
+            Debug.Log("A key has been pressed.");
+            timer = 0;
+            isIdle = false;
+        }
     }
     
     private void playerMoveHandler() {
