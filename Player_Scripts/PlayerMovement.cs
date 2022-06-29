@@ -11,8 +11,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float mouseSensitivity; 
 
     [Header("Player Idle UI")]
+    //[Header("Formula =  Timer + longIdleTime")]
     [SerializeField] private float idleTime; // create a speed for Player
-    private float timer = 0.0f;
+    [SerializeField] public float longIdleTime; // create a speed for Player
+    public float timer = 0.0f;
     public bool isIdle = false;
 
     private float spriteAxisRotationY = 0f; // this is for the sprite rotation it should start at 0f.
