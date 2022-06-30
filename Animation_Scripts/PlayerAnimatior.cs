@@ -28,10 +28,8 @@ public class PlayerAnimator : AnimationPlayer
         timer = PlayerMovement.getInstance().timer;
         longIdleTime = PlayerMovement.getInstance().longIdleTime;
 
-        if (isIdle == true && timer < longIdleTime) {
-            animator.Play(PLAYER_IDLE);
-        } else if (isIdle == true && timer > longIdleTime){
-            animator.Play(PLAYER_IDLE_SLEEP);
+        if (isIdle){
+            playIdleAnimation(playerAnimator, timer);
         } else {
             playMovementAnimation(playerAnimator, verticalInput);
         }
@@ -49,17 +47,11 @@ public class PlayerAnimator : AnimationPlayer
         }
     }
 
-    // lets revist this. see if we can get random animations playing. As of 6/29/2022 this code is deprciated and needs updating/rewriting...
-    private void playIdleAnimation(Animator animator, int idleIndex){
-        //int randomNumber = Random.Range(0, 2);
-        if (idleIndex == 0){
-            animator.Play(PLAYER_IDLE_ONE);
-            Debug.Log("Player Idle One Playing");
-        } else if (idleIndex == 1){
-            animator.Play(PLAYER_IDLE_TWO);
-            Debug.Log("Player Idle Two Playing");
-        } else {
-            Debug.Log("Animation Not found!");
+    private void playIdleAnimation(Animator animator, float timer){
+        if (timer < longIdleTime) {
+            animator.Play(PLAYER_IDLE);
+        } else if (timer > longIdleTime) {
+            animator.Play(PLAYER_IDLE_SLEEP);
         }
     }
     
