@@ -28,17 +28,21 @@ public class PlayerAnimator : AnimationPlayer
         timer = PlayerMovement.getInstance().timer;
         longIdleTime = PlayerMovement.getInstance().longIdleTime;
 
-        if (isIdle){
+        if (isIdle) {
             playIdleAnimation(playerAnimator, timer);
-        } else {
+        } else if (verticalInput != 0 && !isIdle) {
             playMovementAnimation(playerAnimator, verticalInput);
+        } else {
+            playDefault(playerAnimator);
         }
     }
 
+    private void playDefault(Animator animator){
+        animator.Play(DEFAULT_TOWARD);
+    }
+
     private void playMovementAnimation(Animator animator, float verticalInput){
-        if (verticalInput == 0){
-            animator.Play(DEFAULT_TOWARD);
-        } else if (verticalInput > 0){
+        if (verticalInput > 0){
             animator.Play(RUN_AWAY);
         } else if (verticalInput < 0){
             animator.Play(RUN_TOWARD);
